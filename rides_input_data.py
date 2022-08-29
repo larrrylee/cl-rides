@@ -5,6 +5,7 @@ import pandas as pd
 import pickle
 from typing import Tuple
 
+
 def update_pickles():
     # connect Google Sheets
     gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
@@ -18,6 +19,7 @@ def update_pickles():
         with open(os.path.join('pickle', key), 'wb') as pickle_file:
             pickle.dump(records, pickle_file)
 
+
 def print_pickles():
     with open('sheet_ids.json') as gid_json:
         keys = json.load(gid_json).keys()
@@ -28,6 +30,7 @@ def print_pickles():
             df = pd.DataFrame(records)
             print(df)
 
+
 def get_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Return a tuple of pandas DataFrames, ordered as (permanent riders, weekly riders, drivers)
 
@@ -35,7 +38,8 @@ def get_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     update_pickles()
     return get_cached_data()
-    
+
+
 def get_cached_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Return a tuple of pandas DataFrames, ordered as (permanent riders, weekly riders, drivers)
     
