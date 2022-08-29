@@ -30,7 +30,7 @@ def print_pickles():
             print(df)
 
 def main():
-    # update_pickles()
+    update_pickles()
     print_pickles()
 
 if __name__ == "__main__":
