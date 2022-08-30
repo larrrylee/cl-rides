@@ -1,6 +1,4 @@
-import rides_input_data as data
-
-FINAL_SHEET_KEY = "15KJPVqZT6pMq8Qg4qufx9iZOArzjxeD_MN-A-ka6Jnk"
+import rides_data as data
 
 def main():
     data.update_pickles()

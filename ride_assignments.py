@@ -3,19 +3,42 @@ import pandas as pd
 import numpy as np
 
 class RideAssignment:
-    def __init__(self, permanent_riders: pd.DataFrame, weekly_riders: pd.DataFrame, drivers: pd.DataFrame):
+    def __init__(self, permanent_riders: pd.DataFrame, weekly_riders: pd.DataFrame, drivers: pd.DataFrame, assignments: pd.DataFrame = pd.DataFrame()):
+        """Initializes an driver-rider assignment with the given dataframes.
+        
+        Optionally, precalculated assignments can be passed in.
+        This is useful for when assignments have already been sent out to drivers and riders that we don't want to change.
+        """
         self.permanent_riders = permanent_riders
         self.weekly_riders = weekly_riders
         self.drivers = drivers
-        self.assignments = pd.DataFrame()
+        self.assignments = assignments
+
 
     def assign_riders(self):
-        self.__assign_on_campus()
-        self.__assign_off_campus()
+        self._consolidate_riders()
+        self._match_preassignments()
+        self._assign_on_campus()
+        self._assign_off_campus()
+        return
+    
+
+    def _consolidate_riders(self):
+        self.riders = pd.concat([self.permanent_riders, self.weekly_riders])
+        # TODO: can add data validation here (checking duplicates)
+    
+
+    def _match_preassignments(self):
+        
+        #TODO
         return
 
-    def __assign_on_campus(self):
+
+    def _assign_on_campus(self):
+        #TODO
         return
 
-    def __assign_off_campus(self):
+
+    def _assign_off_campus(self):
+        #TODO
         return

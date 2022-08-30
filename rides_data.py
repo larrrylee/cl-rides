@@ -1,4 +1,5 @@
 import gspread
+from gspread_dataframe import set_with_dataframe
 import json
 import os
 import pandas as pd
@@ -7,6 +8,7 @@ from typing import Tuple
 
 DATA_PATH = 'pickle'
 SHEET_ID_FILE = 'sheet_ids.json'
+FINAL_SHEET_KEY = "15KJPVqZT6pMq8Qg4qufx9iZOArzjxeD_MN-A-ka6Jnk"
 
 
 def update_pickles():
@@ -58,3 +60,12 @@ def get_cached_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         drivers = pd.DataFrame(pickle.load(pickle_file))
     
     return (permanent_riders, weekly_riders, drivers)
+
+
+def write_assignments(assignments: pd.DataFrame):
+    # connect Google Sheets
+    gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
+    ws = gc.open_by_key(FINAL_SHEET_KEY).get_worksheet(0)
+    ws.clear()
+    # Will get permission to test. Don't wanna clobbers smth important lol
+    # set_with_dataframe(worksheet=ws, dataframe=assignments)
