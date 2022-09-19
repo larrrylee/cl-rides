@@ -66,6 +66,11 @@ def write_assignments(assignments: pd.DataFrame):
     # connect Google Sheets
     gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
     ws = gc.open_by_key(FINAL_SHEET_KEY).get_worksheet(0)
+    
+    #reset the formatting of the sheet
+    #requests = {"requests": [{"updateCells": {"range": {"sheetId": ws._properties['sheetId']}, "fields": "*"}}]}
+    #res = ws.batch_update(requests)
+    #print(res)
+
     ws.clear()
-    # Will get permission to test. Don't wanna clobbers smth important lol
-    # set_with_dataframe(worksheet=ws, dataframe=assignments)
+    set_with_dataframe(worksheet=ws, dataframe=assignments)
