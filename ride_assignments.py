@@ -24,13 +24,22 @@ class RideAssignment:
     
 
     def _consolidate_riders(self):
+        """Combines the permanent and weekly riders list.
+
+        Removes duplicates and alerts the user of said duplicates.
+        """
+        # TODO: since the sheets are formatted differently for permanent vs weekly riders, concat may not work
         self.riders = pd.concat([self.permanent_riders, self.weekly_riders])
-        # TODO: can add data validation here (checking duplicates)
+        # TODO: checking duplicates
     
 
     def _match_preassignments(self):
-        
-        #TODO
+        """Takes the preexisting assignments and preprocesses the input data to be consistent with those assignments.
+        This allows us to preserve assignments from previous runs of the program.
+        """
+        #TODO after _assign_on_campus
+        for i in self.drivers:
+            break
         return
 
 
@@ -40,5 +49,5 @@ class RideAssignment:
 
 
     def _assign_off_campus(self):
-        #TODO
+        #TODO after _assign_on_campus
         return
