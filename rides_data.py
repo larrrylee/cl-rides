@@ -1,14 +1,23 @@
 import gspread
 from gspread_dataframe import set_with_dataframe
 import json
+from models import *
 import os
 import pandas as pd
 import pickle
 from typing import Tuple
 
+
 DATA_PATH = 'pickle'
 SHEET_ID_FILE = 'sheet_ids.json'
 FINAL_SHEET_KEY = "15KJPVqZT6pMq8Qg4qufx9iZOArzjxeD_MN-A-ka6Jnk"
+
+PERMANENT_RIDER_NAME_KEY = 'Full Name:'
+PERMANENT_RIDER_PHONE_KEY = 'Phone Number: '
+PERMANENT_RIDER_LOCATION_KEY = 'Where should we pick you up?'
+WEEKLY_RIDER_NAME_KEY = 'Name (Include your last name if this is your first time)'
+WEEKLY_RIDER_PHONE_KEY = 'Phone Number '
+WEEKLY_RIDER_LOCATION_KEY = 'Address / Dorm '
 
 
 def update_pickles():
@@ -60,6 +69,34 @@ def get_cached_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         drivers = pd.DataFrame(pickle.load(pickle_file))
     
     return (permanent_riders, weekly_riders, drivers)
+
+
+def riders_to_list() -> list[Rider]:
+    riders = []
+
+    with open(os.path.join(DATA_PATH, 'permanent'), 'rb') as pickle_file:
+        df_permanent = pd.DataFrame(pickle.load(pickle_file))
+        for row in df_permanent.itertuples():
+            riders.append(Rider(row[PERMANENT_RIDER_NAME_KEY], row[PERMANENT_RIDER_PHONE_KEY], row[PERMANENT_RIDER_LOCATION_KEY]))
+    
+    with open(os.path.join(DATA_PATH, 'weekly'), 'rb') as pickle_file:
+        df_weekly = pd.DataFrame(pickle.load(pickle_file))
+        for row in df_weekly.itertuples():
+            riders.append(Rider(row[WEEKLY_RIDER_NAME_KEY], row[WEEKLY_RIDER_PHONE_KEY], row[WEEKLY_RIDER_LOCATION_KEY]))
+
+    return riders
+
+
+def drivers_to_list() -> list[Driver]:
+    drivers = []
+
+    with open(os.path.join(DATA_PATH, 'drivers'), 'rb') as pickle_file:
+        df = pd.DataFrame(pickle.load(pickle_file))
+
+    for row in df.itertuples():
+        drivers.append(Driver(row['Name'], row['Phone Number'], row['Number of Seats in Car (not including you)']))
+
+    return drivers
 
 
 def write_assignments(assignments: pd.DataFrame):
