@@ -12,12 +12,17 @@ DATA_PATH = 'pickle'
 SHEET_ID_FILE = 'sheet_ids.json'
 FINAL_SHEET_KEY = "15KJPVqZT6pMq8Qg4qufx9iZOArzjxeD_MN-A-ka6Jnk"
 
-PERMANENT_RIDER_NAME_KEY = 'Full Name:'
-PERMANENT_RIDER_PHONE_KEY = 'Phone Number: '
-PERMANENT_RIDER_LOCATION_KEY = 'Where should we pick you up?'
-WEEKLY_RIDER_NAME_KEY = 'Name (Include your last name if this is your first time)'
-WEEKLY_RIDER_PHONE_KEY = 'Phone Number '
-WEEKLY_RIDER_LOCATION_KEY = 'Address / Dorm '
+DRIVER_NAME_IDX = 2
+DRIVER_PHONE_IDX = 3
+DRIVER_CAPACITY_IDX = 6
+
+PERMANENT_RIDER_NAME_IDX = 2
+PERMANENT_RIDER_PHONE_IDX = 3
+PERMANENT_RIDER_LOCATION_IDX = 4
+
+WEEKLY_RIDER_NAME_IDX = 2
+WEEKLY_RIDER_PHONE_IDX = 6
+WEEKLY_RIDER_LOCATION_IDX = 4
 
 
 def update_pickles():
@@ -72,29 +77,33 @@ def get_cached_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 
 
 def riders_to_list() -> list[Rider]:
+    """Return the list of riders, combining the permanent and weekly rider forms
+    """
     riders = []
 
     with open(os.path.join(DATA_PATH, 'permanent'), 'rb') as pickle_file:
         df_permanent = pd.DataFrame(pickle.load(pickle_file))
         for row in df_permanent.itertuples():
-            riders.append(Rider(row[PERMANENT_RIDER_NAME_KEY], row[PERMANENT_RIDER_PHONE_KEY], row[PERMANENT_RIDER_LOCATION_KEY]))
+            riders.append(Rider(row[PERMANENT_RIDER_NAME_IDX], row[PERMANENT_RIDER_PHONE_IDX], row[PERMANENT_RIDER_LOCATION_IDX]))
     
     with open(os.path.join(DATA_PATH, 'weekly'), 'rb') as pickle_file:
         df_weekly = pd.DataFrame(pickle.load(pickle_file))
         for row in df_weekly.itertuples():
-            riders.append(Rider(row[WEEKLY_RIDER_NAME_KEY], row[WEEKLY_RIDER_PHONE_KEY], row[WEEKLY_RIDER_LOCATION_KEY]))
+            riders.append(Rider(row[WEEKLY_RIDER_NAME_IDX], row[WEEKLY_RIDER_PHONE_IDX], row[WEEKLY_RIDER_LOCATION_IDX]))
 
     return riders
 
 
 def drivers_to_list() -> list[Driver]:
+    """Return the list of drivers.
+    """
     drivers = []
 
     with open(os.path.join(DATA_PATH, 'drivers'), 'rb') as pickle_file:
         df = pd.DataFrame(pickle.load(pickle_file))
 
     for row in df.itertuples():
-        drivers.append(Driver(row['Name'], row['Phone Number'], row['Number of Seats in Car (not including you)']))
+        drivers.append(Driver(row[DRIVER_NAME_IDX], row[DRIVER_PHONE_IDX], row[DRIVER_CAPACITY_IDX]))
 
     return drivers
 

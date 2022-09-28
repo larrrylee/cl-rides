@@ -9,6 +9,15 @@ class Rider:
         self.phone = phone
         self.location = location
         self.driver = None
+    
+
+    def __str__(self) -> str:
+        return f'Rider: {self.name}, {self.phone}, {self.location}'
+    
+
+    def __repr__(self) -> str:
+        return str(self)
+
 
 class Driver:
     def __init__(self, name: string, phone: string, capacity: int):
@@ -26,3 +35,11 @@ class Driver:
             self.capacity += 1
             return True
         return False
+    
+    
+    def __str__(self) -> str:
+        return f'Driver: {self.name}, {self.phone}, {self.capacity}'
+    
+
+    def __repr__(self) -> str:
+        return str(self)
