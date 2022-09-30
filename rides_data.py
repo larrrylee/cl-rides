@@ -7,25 +7,34 @@ import pandas as pd
 import pickle
 from typing import Tuple
 
+from ride_assignments import RideAssignment
+
 
 DATA_PATH = 'pickle'
 SHEET_ID_FILE = 'sheet_ids.json'
 FINAL_SHEET_KEY = "15KJPVqZT6pMq8Qg4qufx9iZOArzjxeD_MN-A-ka6Jnk"
 
+OUTPUT_DRIVER_NAME_KEY = 'Driver'
+OUTPUT_DRIVER_PHONE_KEY = 'Driver Phone #'
+OUTPUT_RIDER_NAME_KEY = 'Rider'
+OUTPUT_RIDER_PHONE_KEY = 'Rider Phone #'
+OUTPUT_RIDER_LOCATION_KEY = 'Location'
+
+# These indices are the column number that the data would appear in the google sheets
 DRIVER_NAME_IDX = 2
 DRIVER_PHONE_IDX = 3
 DRIVER_CAPACITY_IDX = 6
-
 PERMANENT_RIDER_NAME_IDX = 2
 PERMANENT_RIDER_PHONE_IDX = 3
 PERMANENT_RIDER_LOCATION_IDX = 4
-
 WEEKLY_RIDER_NAME_IDX = 2
 WEEKLY_RIDER_PHONE_IDX = 6
 WEEKLY_RIDER_LOCATION_IDX = 4
 
 
 def update_pickles():
+    """Pull riders and drivers from the Google Sheets and write to the pickle files.
+    """
     # connect Google Sheets
     gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
 
@@ -40,6 +49,10 @@ def update_pickles():
 
 
 def print_pickles():
+    """Print the riders and drivers in the pickle files.
+
+    There is no call to the Google Sheets API, so the printed data is from the last call to update_pickles.
+    """
     with open(SHEET_ID_FILE) as gid_json:
         keys = json.load(gid_json).keys()
 
@@ -53,7 +66,7 @@ def print_pickles():
 def get_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Return a tuple of pandas DataFrames, ordered as (permanent riders, weekly riders, drivers)
 
-    Updates rides data on call, use get_cached_data() if data was already updated.
+    Updates rides data on call. Use get_cached_data() to get prefetched data.
     """
     update_pickles()
     return get_cached_data()
@@ -108,7 +121,9 @@ def drivers_to_list() -> list[Driver]:
     return drivers
 
 
-def write_assignments(assignments: pd.DataFrame):
+def write_assignments(assignments: RideAssignment):
+    """Write the given RideAssignment to the final Google Sheet.
+    """
     # connect Google Sheets
     gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
     ws = gc.open_by_key(FINAL_SHEET_KEY).get_worksheet(0)
@@ -118,5 +133,36 @@ def write_assignments(assignments: pd.DataFrame):
     #res = ws.batch_update(requests)
     #print(res)
 
+    #TODO: use batch updates to use only one API call
     ws.clear()
-    set_with_dataframe(worksheet=ws, dataframe=assignments)
+    set_with_dataframe(worksheet=ws, dataframe=_assignments_to_dataframe(assignments))
+
+
+def _assignments_to_dataframe(assignments: RideAssignment) -> pd.DataFrame:
+    """Convert a RideAssignment object into a dataframe for the final Google Sheet
+    """
+    dict = {
+        OUTPUT_DRIVER_NAME_KEY : [],
+        OUTPUT_DRIVER_PHONE_KEY : [],
+        OUTPUT_RIDER_NAME_KEY : [],
+        OUTPUT_RIDER_PHONE_KEY : [],
+        OUTPUT_RIDER_LOCATION_KEY : []
+    }
+
+    for driver in assignments.drivers:
+        if (len(driver.riders) == 0):
+            continue
+
+        dict[OUTPUT_DRIVER_NAME_KEY].append(driver.name)
+        dict[OUTPUT_DRIVER_PHONE_KEY].append(driver.phone)
+
+        for _ in range(len(driver.riders) - 1):
+            dict[OUTPUT_DRIVER_NAME_KEY].append('')
+            dict[OUTPUT_DRIVER_PHONE_KEY].append('')
+
+        for rider in driver.riders:
+            dict[OUTPUT_RIDER_NAME_KEY].append(rider.name)
+            dict[OUTPUT_RIDER_PHONE_KEY].append(rider.phone)
+            dict[OUTPUT_RIDER_LOCATION_KEY].append(rider.location)
+    
+    return pd.DataFrame(dict)

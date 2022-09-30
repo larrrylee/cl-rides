@@ -35,10 +35,6 @@ class RideAssignment:
                 if driver.add_rider(rider):
                     break
 
-        # TODO: add to assignments
-        #for rider in self.riders:
-        #    self.assignments.append()
-
 
     def _assign_off_campus(self):
         #TODO after _assign_on_campus

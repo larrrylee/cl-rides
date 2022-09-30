@@ -11,8 +11,9 @@ def main():
 
     riders = data.riders_to_list()
     drivers = data.drivers_to_list()
-    print(riders)
-    print(drivers)
+    assignment = RideAssignment(riders, drivers)
+    assignment.assign_riders()
+    data.write_assignments(assignment)
 
 if __name__ == "__main__":
     main()

@@ -25,14 +25,13 @@ class Driver:
         self.name = name
         self.phone = phone
         self.capacity = capacity
-        self.riders = []
+        self.riders : list[Rider] = []
     
 
     def add_rider(self, rider: Rider) -> bool:
         if len(self.riders) < self.capacity and self.riders.count(rider) == 0:
             rider.driver = self
             self.riders.append(rider)
-            self.capacity += 1
             return True
         return False
     
