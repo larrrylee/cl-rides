@@ -1,7 +1,6 @@
 import gspread
 from gspread_dataframe import set_with_dataframe
 import json
-from models import *
 import os
 import pandas as pd
 import pickle
