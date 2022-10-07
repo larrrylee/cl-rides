@@ -55,6 +55,7 @@ def update_pickles():
         gid_data = json.load(gid_json)
 
     for key in gid_data:
+        print(f'Fetching {key}')
         ws = gc.open_by_key(gid_data[key]).get_worksheet(0)
         records = ws.get_all_records()
         with open(os.path.join(DATA_PATH, key), 'wb') as pickle_file:
@@ -70,6 +71,7 @@ def print_pickles():
         keys = json.load(gid_json).keys()
 
     for key in keys:
+        print(f'Printing {key}')
         with open(os.path.join(DATA_PATH, key), 'rb') as pickle_file:
             records = pickle.load(pickle_file)
             df = pd.DataFrame(records)
