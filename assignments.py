@@ -47,7 +47,7 @@ SECTION_MAP = {
 }
 
 
-def assign(df: pd.DataFrame, rf: pd.DataFrame) -> pd.DataFrame:
+def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool) -> pd.DataFrame:
     """Assigns rider to drivers in the returned dataframe, and updates driver timestamp for the last time they drove in place.
     """
     out = pd.concat([pd.DataFrame(columns=[OUTPUT_DRIVER_NAME_KEY, OUTPUT_DRIVER_PHONE_KEY]), rf[[RIDER_NAME_KEY, RIDER_PHONE_KEY, RIDER_LOCATION_KEY, RIDER_NOTES_KEY]]], axis='columns')
@@ -61,7 +61,8 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame) -> pd.DataFrame:
 
         if rider_loc == OFF_CAMPUS_CODE:
             #TODO: do not assign for now
-            print(f'{out.at[r_idx, RIDER_NAME_KEY]} is off campus, assigning skipped')
+            if debug:
+                print(f'{out.at[r_idx, RIDER_NAME_KEY]} is off campus, assigning skipped')
             continue
 
         is_matched = False
@@ -72,10 +73,10 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame) -> pd.DataFrame:
                 _add_rider(out, r_idx, df, d_idx)
                 is_matched = True
                 break
-        
+
         if is_matched:
             continue
-        
+
         # Check if a driver is in the same section on campus.
         for d_idx, driver in df.iterrows():
             if _is_nearby_or_open(driver, rider_loc):
@@ -85,21 +86,22 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame) -> pd.DataFrame:
 
         if is_matched:
             continue
-        
+
         # Check if any driver is available.
         for d_idx, driver in df.iterrows():
             if _is_available(driver):
                 _add_rider(out, r_idx, df, d_idx)
                 is_matched = True
                 break
-    
+
     for _, rider in out.iterrows():
         if rider[OUTPUT_DRIVER_NAME_KEY] is np.NaN:
-            print(f'{rider[RIDER_NAME_KEY]} has no driver')
+            if debug:
+                print(f'{rider[RIDER_NAME_KEY]} has no driver')
 
     df.drop(columns=[DRIVER_OPENINGS_KEY, DRIVER_SECTION_KEY])
     _format_output(out)
-    
+
     return out
 
 
