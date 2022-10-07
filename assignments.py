@@ -51,7 +51,7 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame) -> pd.DataFrame:
     """Assigns rider to drivers in the returned dataframe, and updates driver timestamp for the last time they drove in place.
     """
     out = pd.concat([pd.DataFrame(columns=[OUTPUT_DRIVER_NAME_KEY, OUTPUT_DRIVER_PHONE_KEY]), rf[[RIDER_NAME_KEY, RIDER_PHONE_KEY, RIDER_LOCATION_KEY, RIDER_NOTES_KEY]]], axis='columns')
-    out.reset_index(inplace=True)
+    out.reset_index(inplace=True, drop=True)
     df[DRIVER_OPENINGS_KEY] = df[DRIVER_CAPACITY_KEY]
     df[DRIVER_LOCS_KEY] = DEFAULT_LOCS_CODE
     df[DRIVER_SECTION_KEY] = DEFAULT_AREA_CODE
@@ -98,7 +98,8 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame) -> pd.DataFrame:
             print(f'{rider[RIDER_NAME_KEY]} has no driver')
 
     df.drop(columns=[DRIVER_OPENINGS_KEY, DRIVER_SECTION_KEY])
-    out.sort_values(by=[OUTPUT_DRIVER_NAME_KEY, RIDER_LOCATION_KEY], inplace=True)
+    _format_output(out)
+    
     return out
 
 
@@ -141,3 +142,13 @@ def _is_there_or_open(driver: pd.Series, rider_loc: int) -> bool:
 
 def _is_intersecting(loc1: int, loc2: int) -> bool:
     return (loc1 & loc2) != 0
+
+
+def _format_output(out: pd.DataFrame):
+    out.sort_values(by=[OUTPUT_DRIVER_NAME_KEY, RIDER_LOCATION_KEY], inplace=True)
+    out.reset_index(inplace=True, drop=True)
+
+    for idx in range(len(out) - 1, 0, -1):
+        if out.at[idx, OUTPUT_DRIVER_NAME_KEY] == out.at[idx-1, OUTPUT_DRIVER_NAME_KEY]:
+            out.at[idx, OUTPUT_DRIVER_NAME_KEY] = ''
+            out.at[idx, OUTPUT_DRIVER_PHONE_KEY] = ''

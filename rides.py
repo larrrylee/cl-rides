@@ -8,6 +8,7 @@ def main():
     data.clean_data(drivers, riders)
     out = assign(drivers, riders)
     print(out)
+    #data.write_assignments(out)
 
 
 if __name__ == "__main__":
