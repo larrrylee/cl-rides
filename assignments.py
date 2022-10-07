@@ -1,4 +1,7 @@
-from cmath import nan
+"""Implements all the logic for the assigning drivers and riders.
+Includes group optimization for common pickup locations.
+"""
+
 from datetime import date
 import numpy as np
 import pandas as pd
@@ -13,16 +16,16 @@ SEVENTH = 'Seventh'
 WARREN = 'Warren'
 PEPPER_CANYON = 'Pepper Canyon'
 
-CAMPUS_SOUTHWEST_CODE = 0b00000111
-CAMPUS_NORTHWEST_CODE = 0b00111000
-CAMPUS_EAST_CODE      = 0b11000000
-OFF_CAMPUS_CODE       =~0b11111111
-
 DRIVER_OPENINGS_KEY = 'Open seats'
 DRIVER_LOCS_KEY = 'Locations'
 DEFAULT_LOCS_CODE = 0b0
 DRIVER_SECTION_KEY = 'Area'
 DEFAULT_AREA_CODE = 0b0
+
+CAMPUS_SOUTHWEST_CODE = 0b00000111
+CAMPUS_NORTHWEST_CODE = 0b00111000
+CAMPUS_EAST_CODE      = 0b11000000
+ELSEWHERE_CODE        =~0b11111111
 
 LOC_MAP = {
     REVELLE:       0b1,
@@ -43,12 +46,13 @@ SECTION_MAP = {
     LOC_MAP[ERC]:           CAMPUS_NORTHWEST_CODE,
     LOC_MAP[SEVENTH]:       CAMPUS_NORTHWEST_CODE,
     LOC_MAP[WARREN]:        CAMPUS_EAST_CODE,
-    LOC_MAP[PEPPER_CANYON]: CAMPUS_EAST_CODE
+    LOC_MAP[PEPPER_CANYON]: CAMPUS_EAST_CODE,
+    ELSEWHERE_CODE:         ELSEWHERE_CODE
 }
 
 
 def assign(df: pd.DataFrame, rf: pd.DataFrame) -> pd.DataFrame:
-    """Assigns rider to drivers in the returned dataframe, and updates driver timestamp for the last time they drove in place.
+    """Assigns rider to drivers in the returned dataframe, and updates driver timestamp for the last time they drove.
     """
     out = pd.concat([pd.DataFrame(columns=[OUTPUT_DRIVER_NAME_KEY, OUTPUT_DRIVER_PHONE_KEY]), rf[[RIDER_NAME_KEY, RIDER_PHONE_KEY, RIDER_LOCATION_KEY, RIDER_NOTES_KEY]]], axis='columns')
     out.reset_index(inplace=True, drop=True)
@@ -57,9 +61,9 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame) -> pd.DataFrame:
     df[DRIVER_SECTION_KEY] = DEFAULT_AREA_CODE
 
     for r_idx in range(len(out)):
-        rider_loc = LOC_MAP.get(out.at[r_idx, RIDER_LOCATION_KEY], OFF_CAMPUS_CODE)
+        rider_loc = LOC_MAP.get(out.at[r_idx, RIDER_LOCATION_KEY], ELSEWHERE_CODE)
 
-        if rider_loc == OFF_CAMPUS_CODE:
+        if rider_loc == ELSEWHERE_CODE:
             #TODO: do not assign for now
             print(f'{out.at[r_idx, RIDER_NAME_KEY]} is off campus, assigning skipped')
             continue
@@ -110,7 +114,6 @@ def assign_sunday(df: pd.DataFrame, rf: pd.DataFrame) -> pd.DataFrame:
 
 def assign_friday(df: pd.DataFrame, rf: pd.DataFrame) -> pd.DataFrame:
     #TODO
-    df.drop()
     pass
 
 
@@ -119,7 +122,7 @@ def _add_rider(out: pd.DataFrame, r_idx: int, df: pd.DataFrame, d_idx: int):
     """
     out.at[r_idx, OUTPUT_DRIVER_NAME_KEY] = df.at[d_idx, DRIVER_NAME_KEY]
     out.at[r_idx, OUTPUT_DRIVER_PHONE_KEY] = df.at[d_idx, DRIVER_PHONE_KEY]
-    rider_loc = LOC_MAP.get(out.at[r_idx, RIDER_LOCATION_KEY], OFF_CAMPUS_CODE)
+    rider_loc = LOC_MAP.get(out.at[r_idx, RIDER_LOCATION_KEY], ELSEWHERE_CODE)
     df.at[d_idx, DRIVER_OPENINGS_KEY] -= 1
     df.at[d_idx, DRIVER_LOCS_KEY] |= rider_loc
     df.at[d_idx, DRIVER_SECTION_KEY] = SECTION_MAP[rider_loc]
@@ -127,15 +130,21 @@ def _add_rider(out: pd.DataFrame, r_idx: int, df: pd.DataFrame, d_idx: int):
 
 
 def _is_available(driver: pd.Series) -> bool:
+    """Checks if driver has space to take a rider.
+    """
     return driver[DRIVER_OPENINGS_KEY] > 0
 
 
 def _is_nearby_or_open(driver: pd.Series, rider_loc: int) -> bool:
+    """Checks if driver has no assignments or is already picking up at the same area as the rider.
+    """
     driver_area = driver[DRIVER_SECTION_KEY]
     return _is_available(driver) and (driver_area == DEFAULT_AREA_CODE or _is_intersecting(driver_area, rider_loc))
 
 
 def _is_there_or_open(driver: pd.Series, rider_loc: int) -> bool:
+    """Checks if driver has no assignments or is already picking up at the same college as the rider.
+    """
     driver_loc = driver[DRIVER_LOCS_KEY]
     return _is_available(driver) and (driver_loc == DEFAULT_LOCS_CODE or _is_intersecting(driver_loc, rider_loc))
 
@@ -145,10 +154,16 @@ def _is_intersecting(loc1: int, loc2: int) -> bool:
 
 
 def _format_output(out: pd.DataFrame):
+    """Organizes the output to order by driver then driver. Removes redundant driver details.
+    """
     out.sort_values(by=[OUTPUT_DRIVER_NAME_KEY, RIDER_LOCATION_KEY], inplace=True)
     out.reset_index(inplace=True, drop=True)
 
     for idx in range(len(out) - 1, 0, -1):
-        if out.at[idx, OUTPUT_DRIVER_NAME_KEY] == out.at[idx-1, OUTPUT_DRIVER_NAME_KEY]:
+        if out.at[idx, OUTPUT_DRIVER_NAME_KEY] is np.nan:
+            # Denote unassigned riders.
+            out.at[idx, OUTPUT_DRIVER_NAME_KEY] = '?'
+        elif out.at[idx, OUTPUT_DRIVER_NAME_KEY] == out.at[idx-1, OUTPUT_DRIVER_NAME_KEY]:
+            # Remove redundant driver details.
             out.at[idx, OUTPUT_DRIVER_NAME_KEY] = ''
             out.at[idx, OUTPUT_DRIVER_PHONE_KEY] = ''
