@@ -1,3 +1,7 @@
+"""Implements usage of the Google Sheets API, including reading driver/rider data and writing to the output sheet.
+Also includes data cleaning.
+"""
+
 import gspread
 from gspread_dataframe import set_with_dataframe
 import json
@@ -126,7 +130,6 @@ def _filter_drivers(df: pd.DataFrame):
 
 
 def _filter_riders(rf: pd.DataFrame):
-    #TODO
     rf.drop(columns=[RIDER_TIMESTAMP_KEY], inplace=True)
 
 
