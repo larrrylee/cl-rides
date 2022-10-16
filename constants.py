@@ -32,3 +32,8 @@ WEEKLY_RIDER_LOCATION_KEY = 'Where should we pick you up from?'
 WEEKLY_RIDER_FRIDAY_KEY = 'Friday Night Bible Study (Friday @7pm) (Rides from Campus will be provided at Peterson Loop at 6:30 pm)'
 WEEKLY_RIDER_SUNDAY_KEY = 'Sunday Service '
 WEEKLY_RIDER_NOTES_KEY = 'Additional Comments / Questions / Concerns'
+
+# Specifically for parsing the responses for attending the Friday/Sunday services
+PERMANENT_RIDE_THERE_KEYWORD = 'yes'
+WEEKLY_RIDE_THERE_KEYWORD = 'there'
+RIDE_THERE_KEYWORD = 'yes'

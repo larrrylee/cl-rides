@@ -8,6 +8,7 @@ import json
 import os
 import pandas as pd
 import pickle
+import preprocessing as prep
 from typing import Tuple
 
 
@@ -71,6 +72,9 @@ def get_cached_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
     
     with open(os.path.join(DATA_PATH, 'drivers'), 'rb') as pickle_file:
         drivers = pd.DataFrame(pickle.load(pickle_file))
+    
+    prep.standardize_permanent_responses(permanent_riders)
+    prep.standardize_weekly_responses(weekly_riders)
     
     # Reorder and rename columns before merging
     weekly_riders = weekly_riders[[WEEKLY_RIDER_TIMESTAMP_KEY, WEEKLY_RIDER_NAME_KEY, WEEKLY_RIDER_PHONE_KEY, WEEKLY_RIDER_LOCATION_KEY, WEEKLY_RIDER_FRIDAY_KEY, WEEKLY_RIDER_SUNDAY_KEY, WEEKLY_RIDER_NOTES_KEY]]

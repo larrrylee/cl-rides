@@ -51,3 +51,31 @@ def _validate_riders(rf: pd.DataFrame):
     rf[RIDER_TIMESTAMP_KEY] = pd.to_datetime(rf[RIDER_TIMESTAMP_KEY])
     rf.sort_values(by=RIDER_TIMESTAMP_KEY, inplace=True)
     rf.drop_duplicates(subset=RIDER_PHONE_KEY, inplace=True, keep='last')
+
+
+def standardize_permanent_responses(rf: pd.DataFrame):
+    """Standardize the permanent responses for Friday and Sunday rides.
+    """
+    for idx, response in enumerate(rf[PERMANENT_RIDER_FRIDAY_KEY]):
+        rf.at[idx, PERMANENT_RIDER_FRIDAY_KEY] = RIDE_THERE_KEYWORD if PERMANENT_RIDE_THERE_KEYWORD in response.lower() else ''
+
+    for idx, response in enumerate(rf[PERMANENT_RIDER_SUNDAY_KEY]):
+        rf.at[idx, PERMANENT_RIDER_SUNDAY_KEY] = RIDE_THERE_KEYWORD if PERMANENT_RIDE_THERE_KEYWORD in response.lower() else ''
+
+
+def standardize_weekly_responses(rf: pd.DataFrame):
+    """Standardize the weekly responses for Friday and Sunday rides.
+    """
+    for idx, response in enumerate(rf[WEEKLY_RIDER_FRIDAY_KEY]):
+        rf.at[idx, WEEKLY_RIDER_FRIDAY_KEY] = RIDE_THERE_KEYWORD if WEEKLY_RIDE_THERE_KEYWORD in response.lower() else ''
+
+    for idx, response in enumerate(rf[WEEKLY_RIDER_SUNDAY_KEY]):
+        rf.at[idx, WEEKLY_RIDER_SUNDAY_KEY] = RIDE_THERE_KEYWORD if WEEKLY_RIDE_THERE_KEYWORD in response.lower() else ''
+
+
+def filter_friday(rf: pd.DataFrame):
+    return rf[rf[RIDER_FRIDAY_KEY] == RIDE_THERE_KEYWORD]
+
+
+def filter_sunday(rf: pd.DataFrame):
+    return rf[rf[RIDER_SUNDAY_KEY] == RIDE_THERE_KEYWORD]
