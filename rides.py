@@ -20,6 +20,7 @@ def show_usage() -> None:
     print('    --update              Fetches new data from the sheet and updates the output sheet')
     print('    --debug               Prints out debug statements while running')
     print('    --help                Shows usage')
+    print('    --friday              Switches to Friday College Life rides instead of Sunday service')
     print()
 
 

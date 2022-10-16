@@ -8,6 +8,7 @@ FLAG
     --update              Fetches new data from the sheet and updates the output sheet
     --debug               Prints out debug statements while running
     --help                Shows usage
+    --friday              Switches to Friday College Life rides instead of Sunday service
 ```
 
 To run the file, you need the API key. Contact me directly for it.
