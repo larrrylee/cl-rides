@@ -5,6 +5,7 @@ Usage:
 """
 
 from assignments import assign
+import preprocessing as prep
 import rides_data as data
 import sys
 
@@ -36,7 +37,7 @@ def main(update: bool, debug: bool) -> None:
 
     # Execute the assignment algorithm
     (drivers, riders) = data.get_cached_data()
-    data.clean_data(drivers, riders)
+    prep.clean_data(drivers, riders)
     out = assign(drivers, riders, debug)
 
     # Print output
