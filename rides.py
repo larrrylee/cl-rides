@@ -4,7 +4,8 @@ Usage:
     python rides.py
 """
 
-from assignments import assign, assign_friday, assign_sunday
+import assignments as group
+import postprocessing as post
 import preprocessing as prep
 import rides_data as data
 import sys
@@ -40,9 +41,11 @@ def main(update: bool, debug: bool, friday: bool) -> None:
     (drivers, riders) = data.get_cached_data()
     prep.clean_data(drivers, riders)
     if friday:
-        out = assign_friday(drivers, riders, debug)
+        out = group.assign_friday(drivers, riders, debug)
     else:
-        out = assign_sunday(drivers, riders, debug)
+        out = group.assign_sunday(drivers, riders, debug)
+    
+    post.rotate_drivers(drivers)
 
     # Print output
     if debug:

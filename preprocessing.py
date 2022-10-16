@@ -1,4 +1,4 @@
-"""Implements data cleaning and filtering before assigning groups.
+"""Implements all the preprocessing functionality for the data.
 """
 
 from constants import *
