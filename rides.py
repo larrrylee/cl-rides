@@ -23,7 +23,7 @@ def show_usage() -> None:
     print()
 
 
-def main(update: bool, debug: bool) -> None:
+def main(update: bool, debug: bool, friday: bool) -> None:
     """ Assign riders to drivers, updating the sheet if specified
     """
 
@@ -38,6 +38,11 @@ def main(update: bool, debug: bool) -> None:
     # Execute the assignment algorithm
     (drivers, riders) = data.get_cached_data()
     prep.clean_data(drivers, riders)
+    if friday:
+        riders = prep.filter_friday(riders)
+    else:
+        riders = prep.filter_sunday(riders)
+
     out = assign(drivers, riders, debug)
 
     # Print output
@@ -52,6 +57,7 @@ if __name__ == '__main__':
     execute = True
     update = False
     debug = False
+    friday = False
 
     for argv in sys.argv[1:]:
         if argv == '--update':
@@ -60,8 +66,10 @@ if __name__ == '__main__':
             debug = True
         elif argv == '--help':
             execute = False
+        elif argv == '--friday':
+            friday = True
 
     if execute:
-        main(update, debug)
+        main(update, debug, friday)
     else:
         show_usage()
