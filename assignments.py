@@ -2,6 +2,7 @@
 Includes group optimization for common pickup locations.
 """
 
+from sqlite3 import Timestamp
 from constants import *
 from datetime import date
 import numpy as np
@@ -133,7 +134,7 @@ def _add_rider(out: pd.DataFrame, r_idx: int, df: pd.DataFrame, d_idx: int):
     df.at[d_idx, DRIVER_OPENINGS_KEY] -= 1
     df.at[d_idx, DRIVER_LOCS_KEY] |= rider_loc
     df.at[d_idx, DRIVER_SECTION_KEY] = SECTION_MAP[rider_loc]
-    df.at[d_idx, DRIVER_TIMESTAMP_KEY] = date.today()
+    df.at[d_idx, DRIVER_TIMESTAMP_KEY] = Timestamp.now()
 
 
 def _is_available(driver: pd.Series) -> bool:
