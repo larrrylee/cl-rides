@@ -4,7 +4,7 @@ Usage:
     python rides.py
 """
 
-from assignments import assign
+from assignments import assign, assign_friday, assign_sunday
 import preprocessing as prep
 import rides_data as data
 import sys
@@ -40,18 +40,13 @@ def main(update: bool, debug: bool, friday: bool) -> None:
     (drivers, riders) = data.get_cached_data()
     prep.clean_data(drivers, riders)
     if friday:
-        riders = prep.filter_friday(riders)
+        out = assign_friday(drivers, riders, debug)
     else:
-        riders = prep.filter_sunday(riders)
-    
-    if debug:
-        print(drivers)
-        print(riders)
-
-    out = assign(drivers, riders, debug)
+        out = assign_sunday(drivers, riders, debug)
 
     # Print output
     if debug:
+        print(drivers)
         print(out)
 
     if update:

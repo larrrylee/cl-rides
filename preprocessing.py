@@ -74,8 +74,12 @@ def standardize_weekly_responses(rf: pd.DataFrame):
 
 
 def filter_friday(rf: pd.DataFrame):
+    """Filters riders that will attend Friday College Life.
+    """
     return rf[rf[RIDER_FRIDAY_KEY] == RIDE_THERE_KEYWORD]
 
 
 def filter_sunday(rf: pd.DataFrame):
+    """Filters riders that will attend Sunday service.
+    """
     return rf[rf[RIDER_SUNDAY_KEY] == RIDE_THERE_KEYWORD]

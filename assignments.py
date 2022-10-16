@@ -52,7 +52,7 @@ SECTION_MAP = {
 }
 
 
-def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool) -> pd.DataFrame:
+def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
     """Assigns rider to drivers in the returned dataframe, and updates driver timestamp for the last time they drove.
     """
     out = pd.concat([pd.DataFrame(columns=[OUTPUT_DRIVER_NAME_KEY, OUTPUT_DRIVER_PHONE_KEY]), rf[[RIDER_NAME_KEY, RIDER_PHONE_KEY, RIDER_LOCATION_KEY, RIDER_NOTES_KEY]]], axis='columns')
@@ -110,14 +110,18 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool) -> pd.DataFrame:
     return out
 
 
-def assign_sunday(df: pd.DataFrame, rf: pd.DataFrame) -> pd.DataFrame:
-    #TODO
-    pass
+def assign_sunday(df: pd.DataFrame, rf: pd.DataFrame, debug: bool) -> pd.DataFrame:
+    """Assigns Sunday rides.
+    """
+    rf = prep.filter_sunday(rf)
+    return assign(df, rf, debug)
 
 
-def assign_friday(df: pd.DataFrame, rf: pd.DataFrame) -> pd.DataFrame:
-    #TODO
-    pass
+def assign_friday(df: pd.DataFrame, rf: pd.DataFrame, debug: bool) -> pd.DataFrame:
+    """Assigns Friday rides.
+    """
+    rf = prep.filter_friday(rf)
+    return assign(df, rf, debug)
 
 
 def _add_rider(out: pd.DataFrame, r_idx: int, df: pd.DataFrame, d_idx: int):

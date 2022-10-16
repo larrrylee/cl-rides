@@ -14,7 +14,8 @@ from typing import Tuple
 
 DATA_PATH = 'pickle'
 SHEET_ID_FILE = 'sheet_ids.json'
-FINAL_SHEET_KEY = "15KJPVqZT6pMq8Qg4qufx9iZOArzjxeD_MN-A-ka6Jnk"
+DRIVER_SHEET_KEY = 'drivers'
+FINAL_SHEET_ID = "15KJPVqZT6pMq8Qg4qufx9iZOArzjxeD_MN-A-ka6Jnk"
 
 
 def update_pickles():
@@ -89,8 +90,23 @@ def write_assignments(assignments: pd.DataFrame):
     """
     # connect Google Sheets
     gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
-    ws = gc.open_by_key(FINAL_SHEET_KEY).get_worksheet(0)
+    ws = gc.open_by_key(FINAL_SHEET_ID).get_worksheet(0)
 
     #TODO: use batch updates to use only one API call
     ws.clear()
     set_with_dataframe(worksheet=ws, dataframe=assignments)
+
+
+def update_drivers(drivers: pd.DataFrame):
+    """Write the given dataframe to the driver sheet
+    """
+    with open(SHEET_ID_FILE) as gid_json:
+        gid_data = json.load(gid_json)
+
+    # connect Google Sheets
+    gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
+    ws = gc.open_by_key(gid_data[DRIVER_SHEET_KEY]).get_worksheet(0)
+
+    #TODO: use batch updates to use only one API call
+    ws.clear()
+    set_with_dataframe(worksheet=ws, dataframe=drivers)
