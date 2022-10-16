@@ -1,3 +1,5 @@
+"""Includes all constants used in the project. Mostly Pandas dataframe column headers.
+"""
 
 OUTPUT_DRIVER_NAME_KEY = 'Driver'
 OUTPUT_DRIVER_PHONE_KEY = 'Driver Phone #'
