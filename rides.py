@@ -43,6 +43,10 @@ def main(update: bool, debug: bool, friday: bool) -> None:
         riders = prep.filter_friday(riders)
     else:
         riders = prep.filter_sunday(riders)
+    
+    if debug:
+        print(drivers)
+        print(riders)
 
     out = assign(drivers, riders, debug)
 
