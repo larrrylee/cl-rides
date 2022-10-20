@@ -45,17 +45,19 @@ def main(update: bool, debug: bool, friday: bool) -> None:
     else:
         out = group.assign_sunday(drivers, riders, debug)
     
-    post.rotate_drivers(drivers)
+    post.clean_data(drivers)
     data.update_drivers_locally(drivers)
 
     # Print output
     if debug:
+        print('Driver output')
         print(drivers)
+        print('Assignments output')
         print(out)
 
     if update:
         data.write_assignments(out)
-        data.update_drivers(drivers)
+        #data.update_drivers(drivers)
 
 
 if __name__ == '__main__':

@@ -82,6 +82,8 @@ def get_cached_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
     weekly_riders.rename(columns={WEEKLY_RIDER_TIMESTAMP_KEY: RIDER_TIMESTAMP_KEY, WEEKLY_RIDER_NAME_KEY: RIDER_NAME_KEY, WEEKLY_RIDER_PHONE_KEY: RIDER_PHONE_KEY, WEEKLY_RIDER_LOCATION_KEY: RIDER_LOCATION_KEY, WEEKLY_RIDER_FRIDAY_KEY: RIDER_FRIDAY_KEY, WEEKLY_RIDER_SUNDAY_KEY: RIDER_SUNDAY_KEY, WEEKLY_RIDER_NOTES_KEY: RIDER_NOTES_KEY}, inplace=True)
     permanent_riders.rename(columns={PERMANENT_RIDER_TIMESTAMP_KEY: RIDER_TIMESTAMP_KEY, PERMANENT_RIDER_NAME_KEY: RIDER_NAME_KEY, PERMANENT_RIDER_PHONE_KEY: RIDER_PHONE_KEY, PERMANENT_RIDER_LOCATION_KEY: RIDER_LOCATION_KEY, PERMANENT_RIDER_FRIDAY_KEY: RIDER_FRIDAY_KEY, PERMANENT_RIDER_SUNDAY_KEY: RIDER_SUNDAY_KEY, PERMANENT_RIDER_NOTES_KEY: RIDER_NOTES_KEY}, inplace=True)
     riders = pd.concat([permanent_riders, weekly_riders])
+    riders.reset_index(inplace=True, drop=True)
+
     return (drivers, riders)
 
 
@@ -114,7 +116,5 @@ def update_drivers(drivers: pd.DataFrame):
 
 def update_drivers_locally(drivers: pd.DataFrame):
     """Write the given dataframe to the drivers pickle file.
-
-    Only to be used for testing.
     """
     drivers.to_pickle(os.path.join(DATA_PATH, DRIVER_SHEET_KEY))

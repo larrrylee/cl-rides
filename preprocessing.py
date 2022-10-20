@@ -6,7 +6,7 @@ import pandas as pd
 
 
 def clean_data(df: pd.DataFrame, rf: pd.DataFrame):
-    """Filters out the unneeded columns and and validates the data.
+    """Filters out the unneeded columns and and validates the data before assigning.
     """
     _validate_data(df, rf)
     _filter_data(df, rf)
@@ -47,7 +47,7 @@ def _validate_drivers(df: pd.DataFrame):
 def _validate_riders(rf: pd.DataFrame):
     """Drops the oldest duplicates from the riders list.
     """
-    rf.drop(rf[ rf[RIDER_PHONE_KEY] == ''].index, inplace=True)
+    rf.drop(rf[ rf[RIDER_PHONE_KEY] == '' ].index, inplace=True)
     rf[RIDER_TIMESTAMP_KEY] = pd.to_datetime(rf[RIDER_TIMESTAMP_KEY])
     rf.sort_values(by=RIDER_TIMESTAMP_KEY, inplace=True)
     rf.drop_duplicates(subset=RIDER_PHONE_KEY, inplace=True, keep='last')
