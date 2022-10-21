@@ -5,7 +5,6 @@ Usage:
 """
 
 import assignments as group
-import postprocessing as post
 import preprocessing as prep
 import rides_data as data
 import sys
@@ -45,7 +44,6 @@ def main(update: bool, debug: bool, friday: bool) -> None:
     else:
         out = group.assign_sunday(drivers, riders, debug)
     
-    post.clean_data(drivers)
     data.update_drivers_locally(drivers)
 
     # Print output

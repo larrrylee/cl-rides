@@ -12,6 +12,51 @@ def clean_data(df: pd.DataFrame, rf: pd.DataFrame):
     _filter_data(df, rf)
 
 
+def standardize_permanent_responses(rf: pd.DataFrame):
+    """Standardize the permanent responses for Friday and Sunday rides.
+    """
+    for idx, response in enumerate(rf[PERMANENT_RIDER_FRIDAY_KEY]):
+        rf.at[idx, PERMANENT_RIDER_FRIDAY_KEY] = RIDE_THERE_KEYWORD if PERMANENT_RIDE_THERE_KEYWORD in response.lower() else ''
+
+    for idx, response in enumerate(rf[PERMANENT_RIDER_SUNDAY_KEY]):
+        rf.at[idx, PERMANENT_RIDER_SUNDAY_KEY] = RIDE_THERE_KEYWORD if PERMANENT_RIDE_THERE_KEYWORD in response.lower() else ''
+
+
+def standardize_weekly_responses(rf: pd.DataFrame):
+    """Standardize the weekly responses for Friday and Sunday rides.
+    """
+    for idx, response in enumerate(rf[WEEKLY_RIDER_FRIDAY_KEY]):
+        rf.at[idx, WEEKLY_RIDER_FRIDAY_KEY] = RIDE_THERE_KEYWORD if WEEKLY_RIDE_THERE_KEYWORD in response.lower() else ''
+
+    for idx, response in enumerate(rf[WEEKLY_RIDER_SUNDAY_KEY]):
+        rf.at[idx, WEEKLY_RIDER_SUNDAY_KEY] = RIDE_THERE_KEYWORD if WEEKLY_RIDE_THERE_KEYWORD in response.lower() else ''
+
+
+def filter_friday(rf: pd.DataFrame):
+    """Filters riders that will attend Friday College Life.
+    """
+    return rf[rf[RIDER_FRIDAY_KEY] == RIDE_THERE_KEYWORD]
+
+
+def filter_sunday(rf: pd.DataFrame):
+    """Filters riders that will attend Sunday service.
+    """
+    return rf[rf[RIDER_SUNDAY_KEY] == RIDE_THERE_KEYWORD]
+
+
+def add_temporaries(df: pd.DataFrame):
+    """Adds temporary columns to the dataframes for calculating assignments.
+    """
+    df[DRIVER_OPENINGS_KEY] = df[DRIVER_CAPACITY_KEY]
+    df[DRIVER_ROUTE_KEY] = DEFAULT_LOCS_CODE
+
+
+def sync_to_last_assignments(df: pd.DataFrame, rf: pd.DataFrame, out: pd.DataFrame):
+    """Set up the drivers and riders to reflect the precalculated assignments."""
+    # TODO
+    pass
+
+
 def _filter_data(df: pd.DataFrame, rf: pd.DataFrame):
     _filter_drivers(df)
     _filter_riders(rf)
@@ -51,35 +96,3 @@ def _validate_riders(rf: pd.DataFrame):
     rf[RIDER_TIMESTAMP_KEY] = pd.to_datetime(rf[RIDER_TIMESTAMP_KEY])
     rf.sort_values(by=RIDER_TIMESTAMP_KEY, inplace=True)
     rf.drop_duplicates(subset=RIDER_PHONE_KEY, inplace=True, keep='last')
-
-
-def standardize_permanent_responses(rf: pd.DataFrame):
-    """Standardize the permanent responses for Friday and Sunday rides.
-    """
-    for idx, response in enumerate(rf[PERMANENT_RIDER_FRIDAY_KEY]):
-        rf.at[idx, PERMANENT_RIDER_FRIDAY_KEY] = RIDE_THERE_KEYWORD if PERMANENT_RIDE_THERE_KEYWORD in response.lower() else ''
-
-    for idx, response in enumerate(rf[PERMANENT_RIDER_SUNDAY_KEY]):
-        rf.at[idx, PERMANENT_RIDER_SUNDAY_KEY] = RIDE_THERE_KEYWORD if PERMANENT_RIDE_THERE_KEYWORD in response.lower() else ''
-
-
-def standardize_weekly_responses(rf: pd.DataFrame):
-    """Standardize the weekly responses for Friday and Sunday rides.
-    """
-    for idx, response in enumerate(rf[WEEKLY_RIDER_FRIDAY_KEY]):
-        rf.at[idx, WEEKLY_RIDER_FRIDAY_KEY] = RIDE_THERE_KEYWORD if WEEKLY_RIDE_THERE_KEYWORD in response.lower() else ''
-
-    for idx, response in enumerate(rf[WEEKLY_RIDER_SUNDAY_KEY]):
-        rf.at[idx, WEEKLY_RIDER_SUNDAY_KEY] = RIDE_THERE_KEYWORD if WEEKLY_RIDE_THERE_KEYWORD in response.lower() else ''
-
-
-def filter_friday(rf: pd.DataFrame):
-    """Filters riders that will attend Friday College Life.
-    """
-    return rf[rf[RIDER_FRIDAY_KEY] == RIDE_THERE_KEYWORD]
-
-
-def filter_sunday(rf: pd.DataFrame):
-    """Filters riders that will attend Sunday service.
-    """
-    return rf[rf[RIDER_SUNDAY_KEY] == RIDE_THERE_KEYWORD]

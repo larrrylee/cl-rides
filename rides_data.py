@@ -99,6 +99,15 @@ def write_assignments(assignments: pd.DataFrame):
     set_with_dataframe(worksheet=ws, dataframe=assignments)
 
 
+def get_last_assignments() -> pd.DataFrame:
+    """Get the assignments that were calculated from the last grouping.
+    """
+    gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
+    ws = gc.open_by_key(FINAL_SHEET_ID).get_worksheet(0)
+    records = ws.get_all_records()
+    return pd.DataFrame(records)
+
+
 def update_drivers(drivers: pd.DataFrame):
     """Write the given dataframe to the driver sheet.
     """

@@ -6,6 +6,8 @@ from sqlite3 import Timestamp
 from constants import *
 import numpy as np
 import pandas as pd
+import postprocessing as post
+import preprocessing as prep
 from rides_data import *
 
 
@@ -14,15 +16,13 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool = False) -> pd.DataFr
     """
     out = pd.concat([pd.DataFrame(columns=[OUTPUT_DRIVER_NAME_KEY, OUTPUT_DRIVER_PHONE_KEY]), rf[[RIDER_NAME_KEY, RIDER_PHONE_KEY, RIDER_LOCATION_KEY, RIDER_NOTES_KEY]]], axis='columns')
     out.reset_index(inplace=True, drop=True)
-    df[DRIVER_OPENINGS_KEY] = df[DRIVER_CAPACITY_KEY]
-    df[DRIVER_ROUTE_KEY] = DEFAULT_LOCS_CODE
 
     if debug:
-        print('Assigning started')
         print('Drivers')
         print(df)
         print('Riders')
         print(rf)
+        print('Assigning started')
 
     for r_idx in range(len(out)):
         rider_loc = LOC_MAP.get(out.at[r_idx, RIDER_LOCATION_KEY], ELSEWHERE_CODE)
@@ -30,7 +30,7 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool = False) -> pd.DataFr
         if rider_loc == ELSEWHERE_CODE:
             #TODO: do not assign for now
             if debug:
-                print(f'{out.at[r_idx, RIDER_NAME_KEY]} is not from a prerecorded location, assigning skipped')
+                print(f'\t{out.at[r_idx, RIDER_NAME_KEY]} is not from a prerecorded location, assigning skipped')
             continue
 
         is_matched = False
@@ -62,13 +62,6 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool = False) -> pd.DataFr
                 is_matched = True
                 break
 
-    if debug:
-        for _, rider in out.iterrows():
-            if rider[OUTPUT_DRIVER_NAME_KEY] is np.NaN:
-                    print(f'{rider[RIDER_NAME_KEY]} has no driver')
-
-    _format_output(out)
-
     return out
 
 
@@ -76,14 +69,22 @@ def assign_sunday(df: pd.DataFrame, rf: pd.DataFrame, debug: bool) -> pd.DataFra
     """Assigns Sunday rides.
     """
     rf = prep.filter_sunday(rf)
-    return assign(df, rf, debug)
+    prep.add_temporaries(df)
+    out = assign(df, rf, debug)
+    post.alert_skipped_riders(out, debug)
+    post.clean_output(out, df)
+    return out
 
 
 def assign_friday(df: pd.DataFrame, rf: pd.DataFrame, debug: bool) -> pd.DataFrame:
     """Assigns Friday rides.
     """
     rf = prep.filter_friday(rf)
-    return assign(df, rf, debug)
+    prep.add_temporaries(df)
+    out = assign(df, rf, debug)
+    post.alert_skipped_riders(out, debug)
+    post.clean_output(out, df)
+    return out
 
 
 def _add_rider(out: pd.DataFrame, r_idx: int, df: pd.DataFrame, d_idx: int):
@@ -125,19 +126,3 @@ def _is_there_or_open(driver: pd.Series, rider_loc: int) -> bool:
 
 def _is_intersecting(loc1: int, loc2: int) -> bool:
     return (loc1 & loc2) != 0
-
-
-def _format_output(out: pd.DataFrame):
-    """Organizes the output to order by driver then driver. Removes redundant driver details.
-    """
-    out.sort_values(by=[OUTPUT_DRIVER_NAME_KEY, RIDER_LOCATION_KEY], inplace=True)
-    out.reset_index(inplace=True, drop=True)
-
-    for idx in range(len(out) - 1, 0, -1):
-        if out.at[idx, OUTPUT_DRIVER_NAME_KEY] is np.nan:
-            # Denote unassigned riders.
-            out.at[idx, OUTPUT_DRIVER_NAME_KEY] = '?'
-        elif out.at[idx, OUTPUT_DRIVER_NAME_KEY] == out.at[idx-1, OUTPUT_DRIVER_NAME_KEY]:
-            # Remove redundant driver details.
-            out.at[idx, OUTPUT_DRIVER_NAME_KEY] = ''
-            out.at[idx, OUTPUT_DRIVER_PHONE_KEY] = ''
