@@ -4,7 +4,6 @@ Includes group optimization for common pickup locations.
 
 from sqlite3 import Timestamp
 from constants import *
-import numpy as np
 import pandas as pd
 import postprocessing as post
 import preprocessing as prep
@@ -13,6 +12,8 @@ from rides_data import *
 
 def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
     """Assigns rider to drivers in the returned dataframe, and updates driver timestamp for the last time they drove.
+
+    PRECONDITION: add_temporaries must have been called on df.
     """
     out = pd.concat([pd.DataFrame(columns=[OUTPUT_DRIVER_NAME_KEY, OUTPUT_DRIVER_PHONE_KEY]), rf[[RIDER_NAME_KEY, RIDER_PHONE_KEY, RIDER_LOCATION_KEY, RIDER_NOTES_KEY]]], axis='columns')
     out.reset_index(inplace=True, drop=True)
@@ -63,6 +64,41 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool = False) -> pd.DataFr
                 break
 
     return out
+
+
+def sync_to_last_assignments(df: pd.DataFrame, rf: pd.DataFrame, out: pd.DataFrame) -> pd.DataFrame:
+    """Synchronize driver stats to reflect the precalculated assignments. Preassigned riders will be removed from `rf`.
+
+    If synchronization is not possible with the given drivers, the output will be adjusted to match driver availability.
+    PRECONDITION: add_temporaries must have been called on df.
+    TODO: test
+    """
+    synced_out = pd.DataFrame()
+    d_idx = -1
+    d_phone = ''
+    occupancy = 0
+    valid = False
+    for idx, phone in enumerate(out[DRIVER_PHONE_KEY]):
+        if phone != '':
+            # Found new driver phone
+            if valid:
+                # Update the previous driver's openings
+                df.at[d_idx, DRIVER_OPENINGS_KEY] -= occupancy
+                d_idx = df[DRIVER_PHONE_KEY].index(d_phone)
+            valid = phone in df[DRIVER_PHONE_KEY]
+            d_phone = phone 
+            occupancy = 1
+        else:
+            occupancy += 1
+
+        if valid:
+            # transfer to synced dataframe, remove rider from form, update driver route
+            entry = out.iloc[[idx]]
+            rider_loc = LOC_MAP.get(entry.at[0, RIDER_LOCATION_KEY], ELSEWHERE_CODE)
+            df.at[d_idx, DRIVER_ROUTE_KEY] |= rider_loc
+            rf.drop(rf[ rf[RIDER_PHONE_KEY] == entry[RIDER_PHONE_KEY]].index, inplace=True)
+            synced_out = pd.concat([synced_out, entry])
+    return synced_out
 
 
 def assign_sunday(df: pd.DataFrame, rf: pd.DataFrame, debug: bool) -> pd.DataFrame:

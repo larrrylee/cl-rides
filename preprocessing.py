@@ -51,12 +51,6 @@ def add_temporaries(df: pd.DataFrame):
     df[DRIVER_ROUTE_KEY] = DEFAULT_LOCS_CODE
 
 
-def sync_to_last_assignments(df: pd.DataFrame, rf: pd.DataFrame, out: pd.DataFrame):
-    """Set up the drivers and riders to reflect the precalculated assignments."""
-    # TODO
-    pass
-
-
 def _filter_data(df: pd.DataFrame, rf: pd.DataFrame):
     _filter_drivers(df)
     _filter_riders(rf)

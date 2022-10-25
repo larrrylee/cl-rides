@@ -14,13 +14,14 @@ def show_usage() -> None:
     """ Show usage of rides.py
     """
     print('USAGE:')
-    print('python rides.py [FLAG] [[FLAG] ...]')
+    print('python rides.py <--friday | --sunday> [[FLAG] ...]')
     print()
     print('FLAG')
     print('    --update              Fetches new data from the sheet and updates the output sheet')
     print('    --debug               Prints out debug statements while running')
     print('    --help                Shows usage')
-    print('    --friday              Switches to Friday College Life rides instead of Sunday service')
+    print('    --friday              Assigns rides for Friday College Life')
+    print('    --sunday              Assigns rides for sunday service')
     print()
 
 
@@ -63,6 +64,7 @@ if __name__ == '__main__':
     update = False
     debug = False
     friday = False
+    sunday = False
 
     for argv in sys.argv[1:]:
         if argv == '--update':
@@ -73,6 +75,10 @@ if __name__ == '__main__':
             execute = False
         elif argv == '--friday':
             friday = True
+        elif argv == '--sunday':
+            sunday = True
+    
+    execute = execute and (friday != sunday)
 
     if execute:
         main(update, debug, friday)

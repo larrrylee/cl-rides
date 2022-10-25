@@ -53,7 +53,7 @@ RITA_ATKINSON = 'Rita Atkinson'
 REGENTS = 'Regents'
 COSTA_VERDE = 'Costa Verde'
 
-# Enumerating locations, consecutive numbers => neighboring locations
+### Enumerating locations, consecutive numbers => neighboring locations
 REVELLE_LOC = 0
 MUIR_LOC = REVELLE_LOC + 1
 SIXTH_LOC = MUIR_LOC + 1
@@ -62,8 +62,8 @@ ERC_LOC = MARSHALL_LOC + 1
 SEVENTH_LOC = ERC_LOC + 1
 WARREN_LOC = SEVENTH_LOC + 1
 PEPPER_CANYON_LOC = WARREN_LOC + 1
-RITA_ATKINSON_LOC = PEPPER_CANYON_LOC + 2
-REGENTS_LOC = RITA_ATKINSON_LOC + 2
+RITA_ATKINSON_LOC = PEPPER_CANYON_LOC + 2   # gap
+REGENTS_LOC = RITA_ATKINSON_LOC + 2         # gap
 COSTA_VERDE_LOC = REGENTS_LOC + 1
 
 ELSEWHERE_CODE = ~(COSTA_VERDE_LOC | (COSTA_VERDE_LOC - 1)) << 1
@@ -72,7 +72,7 @@ DEFAULT_LOCS_CODE = 0b0
 DRIVER_OPENINGS_KEY = 'Open seats'
 DRIVER_ROUTE_KEY = 'Locations'
 
-# Converting enumeration to bitmap, allows to check for location intersection by bitmasking
+### Converting enumeration to bitmap, allows to check for location intersection by bitmasking
 LOC_MAP = {
     REVELLE:       0b1 << REVELLE_LOC,
     MUIR:          0b1 << MUIR_LOC,
