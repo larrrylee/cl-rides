@@ -78,25 +78,25 @@ def sync_to_last_assignments(df: pd.DataFrame, rf: pd.DataFrame, out: pd.DataFra
     d_phone = ''
     occupancy = 0
     valid = False
-    for idx, phone in enumerate(out[DRIVER_PHONE_KEY]):
+    for idx, phone in enumerate(out[OUTPUT_DRIVER_PHONE_KEY]):
         if phone != '':
             # Found new driver phone
             if valid:
                 # Update the previous driver's openings
                 df.at[d_idx, DRIVER_OPENINGS_KEY] -= occupancy
-                d_idx = df[DRIVER_PHONE_KEY].index(d_phone)
-            valid = phone in df[DRIVER_PHONE_KEY]
-            d_phone = phone 
             occupancy = 1
+            d_phone = phone 
+            valid = phone in df[DRIVER_PHONE_KEY].values
+            d_idx = df[DRIVER_PHONE_KEY].to_list().index(d_phone)
         else:
             occupancy += 1
 
         if valid:
             # transfer to synced dataframe, remove rider from form, update driver route
             entry = out.iloc[[idx]]
-            rider_loc = LOC_MAP.get(entry.at[0, RIDER_LOCATION_KEY], ELSEWHERE_CODE)
+            rider_loc = LOC_MAP.get(entry.at[entry.index[0], RIDER_LOCATION_KEY], ELSEWHERE_CODE)
             df.at[d_idx, DRIVER_ROUTE_KEY] |= rider_loc
-            rf.drop(rf[ rf[RIDER_PHONE_KEY] == entry[RIDER_PHONE_KEY]].index, inplace=True)
+            rf.drop(rf[ rf[RIDER_PHONE_KEY] == entry.at[entry.index[0], RIDER_PHONE_KEY]].index, inplace=True)
             synced_out = pd.concat([synced_out, entry])
     return synced_out
 
