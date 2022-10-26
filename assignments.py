@@ -71,32 +71,24 @@ def sync_to_last_assignments(df: pd.DataFrame, rf: pd.DataFrame, out: pd.DataFra
 
     If synchronization is not possible with the given drivers, the output will be adjusted to match driver availability.
     PRECONDITION: add_temporaries must have been called on df.
-    TODO: test
     """
     synced_out = pd.DataFrame()
-    d_idx = -1
-    d_phone = ''
-    occupancy = 0
+    d_idx = None
     valid = False
-    for idx, phone in enumerate(out[OUTPUT_DRIVER_PHONE_KEY]):
+    for idx in out.index:
+        phone = out.at[idx, OUTPUT_DRIVER_PHONE_KEY]
         if phone != '':
             # Found new driver phone
-            if valid:
-                # Update the previous driver's openings
-                df.at[d_idx, DRIVER_OPENINGS_KEY] -= occupancy
-            occupancy = 1
-            d_phone = phone 
-            valid = phone in df[DRIVER_PHONE_KEY].values
-            d_idx = df[DRIVER_PHONE_KEY].to_list().index(d_phone)
-        else:
-            occupancy += 1
+            d_idx = df[df[DRIVER_PHONE_KEY] == phone].first_valid_index()
+            valid = d_idx is not None
 
         if valid:
-            # transfer to synced dataframe, remove rider from form, update driver route
+            # transfer to synced dataframe, remove rider from form, update driver stats
+            df.at[d_idx, DRIVER_OPENINGS_KEY] -= 1
             entry = out.iloc[[idx]]
             rider_loc = LOC_MAP.get(entry.at[entry.index[0], RIDER_LOCATION_KEY], ELSEWHERE_CODE)
             df.at[d_idx, DRIVER_ROUTE_KEY] |= rider_loc
-            rf.drop(rf[ rf[RIDER_PHONE_KEY] == entry.at[entry.index[0], RIDER_PHONE_KEY]].index, inplace=True)
+            rf.drop(rf[rf[RIDER_PHONE_KEY] == entry.at[entry.index[0], RIDER_PHONE_KEY]].index, inplace=True)
             synced_out = pd.concat([synced_out, entry])
     return synced_out
 
