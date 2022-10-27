@@ -20,7 +20,7 @@ def format_output(out: pd.DataFrame):
     out.sort_values(by=[OUTPUT_DRIVER_NAME_KEY, RIDER_LOCATION_KEY], inplace=True)
     out.reset_index(inplace=True, drop=True)
 
-    for idx in range(len(out) - 1, 0, -1):  # TODO: guard against index shuffling
+    for idx in range(len(out) - 1, 0, -1):
         if out.at[idx, OUTPUT_DRIVER_NAME_KEY] is np.nan:
             # Denote unassigned riders.
             out.at[idx, OUTPUT_DRIVER_NAME_KEY] = '?'
