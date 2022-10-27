@@ -136,6 +136,18 @@ def _add_rider(out: pd.DataFrame, r_idx: int, df: pd.DataFrame, d_idx: int):
     df.at[d_idx, DRIVER_TIMESTAMP_KEY] = Timestamp.now()
 
 
+def _is_nearby_n(driver: pd.Series, rider_loc: int, dist: int) -> bool:
+    """Checks if driver has no assignments or is already picking up at the same area as the rider.
+    """
+    return _has_opening(driver) and (_is_free(driver) or _is_intersecting(driver, rider_loc << dist) or _is_intersecting(driver, rider_loc >> dist))
+
+
+def _is_there_or_open(driver: pd.Series, rider_loc: int) -> bool:
+    """Checks if driver has no assignments or is already picking up at the same college as the rider.
+    """
+    return _has_opening(driver) and (_is_free(driver) or _is_intersecting(driver, rider_loc))
+
+
 def _has_opening(driver: pd.Series) -> bool:
     """Checks if driver has space to take a rider.
     """
@@ -148,21 +160,8 @@ def _is_free(driver: pd.Series) -> bool:
     return driver[DRIVER_ROUTE_KEY] == DEFAULT_LOCS_CODE
 
 
-def _is_nearby_n(driver: pd.Series, rider_loc: int, dist: int) -> bool:
-    """Checks if driver has no assignments or is already picking up at the same area as the rider.
+def _is_intersecting(driver: pd.Series, rider_loc: int) -> bool:
+    """Checks if a driver route intersects with a rider's location.
     """
     driver_loc = driver[DRIVER_ROUTE_KEY]
-    return _has_opening(driver) and (_is_free(driver) or _is_intersecting(driver_loc << dist, rider_loc) or _is_intersecting(driver_loc >> dist, rider_loc))
-
-
-def _is_there_or_open(driver: pd.Series, rider_loc: int) -> bool:
-    """Checks if driver has no assignments or is already picking up at the same college as the rider.
-    """
-    driver_loc = driver[DRIVER_ROUTE_KEY]
-    return _has_opening(driver) and (driver_loc == DEFAULT_LOCS_CODE or _is_intersecting(driver_loc, rider_loc))
-
-
-def _is_intersecting(loc1: int, loc2: int) -> bool:
-    """Checks if a driver route intersects with a location.
-    """
-    return (loc1 & loc2) != 0
+    return (driver_loc & rider_loc) != 0
