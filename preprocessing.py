@@ -15,20 +15,20 @@ def clean_data(df: pd.DataFrame, rf: pd.DataFrame):
 def standardize_permanent_responses(rf: pd.DataFrame):
     """Standardize the permanent responses for Friday and Sunday rides.
     """
-    for idx, response in enumerate(rf[PERMANENT_RIDER_FRIDAY_KEY]):
+    for idx, response in enumerate(rf[PERMANENT_RIDER_FRIDAY_KEY]): # TODO: guard against index shuffling
         rf.at[idx, PERMANENT_RIDER_FRIDAY_KEY] = RIDE_THERE_KEYWORD if PERMANENT_RIDE_THERE_KEYWORD in response.lower() else ''
 
-    for idx, response in enumerate(rf[PERMANENT_RIDER_SUNDAY_KEY]):
+    for idx, response in enumerate(rf[PERMANENT_RIDER_SUNDAY_KEY]): # TODO: guard against index shuffling
         rf.at[idx, PERMANENT_RIDER_SUNDAY_KEY] = RIDE_THERE_KEYWORD if PERMANENT_RIDE_THERE_KEYWORD in response.lower() else ''
 
 
 def standardize_weekly_responses(rf: pd.DataFrame):
     """Standardize the weekly responses for Friday and Sunday rides.
     """
-    for idx, response in enumerate(rf[WEEKLY_RIDER_FRIDAY_KEY]):
+    for idx, response in enumerate(rf[WEEKLY_RIDER_FRIDAY_KEY]):    # TODO: guard against index shuffling
         rf.at[idx, WEEKLY_RIDER_FRIDAY_KEY] = RIDE_THERE_KEYWORD if WEEKLY_RIDE_THERE_KEYWORD in response.lower() else ''
 
-    for idx, response in enumerate(rf[WEEKLY_RIDER_SUNDAY_KEY]):
+    for idx, response in enumerate(rf[WEEKLY_RIDER_SUNDAY_KEY]):    # TODO: guard against index shuffling
         rf.at[idx, WEEKLY_RIDER_SUNDAY_KEY] = RIDE_THERE_KEYWORD if WEEKLY_RIDE_THERE_KEYWORD in response.lower() else ''
 
 

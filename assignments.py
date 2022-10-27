@@ -16,7 +16,7 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool = False) -> pd.DataFr
     PRECONDITION: add_temporaries must have been called on df.
     """
     out = pd.concat([pd.DataFrame(columns=[OUTPUT_DRIVER_NAME_KEY, OUTPUT_DRIVER_PHONE_KEY]), rf[[RIDER_NAME_KEY, RIDER_PHONE_KEY, RIDER_LOCATION_KEY, RIDER_NOTES_KEY]]], axis='columns')
-    out.reset_index(inplace=True, drop=True)
+    out.reset_index(inplace=True, drop=True)    # TODO: possibly remove
 
     if debug:
         print('Drivers')
@@ -25,7 +25,7 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool = False) -> pd.DataFr
         print(rf)
         print('Assigning started')
 
-    for r_idx in range(len(out)):
+    for r_idx in out.index:
         rider_loc = LOC_MAP.get(out.at[r_idx, RIDER_LOCATION_KEY], ELSEWHERE_CODE)
 
         if rider_loc == ELSEWHERE_CODE:
@@ -46,9 +46,19 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool = False) -> pd.DataFr
         if is_matched:
             continue
 
-        # Check if a driver is in the same section on campus.
+        # Check if a driver route is one place away.
         for d_idx, driver in df.iterrows():
-            if _is_nearby_or_open(driver, rider_loc):
+            if _is_nearby_n(driver, rider_loc, 1):
+                _add_rider(out, r_idx, df, d_idx)
+                is_matched = True
+                break
+
+        if is_matched:
+            continue
+
+        # Check if a driver route is two places away.
+        for d_idx, driver in df.iterrows():
+            if _is_nearby_n(driver, rider_loc, 2):
                 _add_rider(out, r_idx, df, d_idx)
                 is_matched = True
                 break
@@ -83,7 +93,7 @@ def sync_to_last_assignments(df: pd.DataFrame, rf: pd.DataFrame, out: pd.DataFra
             valid = d_idx is not None
 
         if valid:
-            # transfer to synced dataframe, remove rider from form, update driver stats
+            # update driver stats, remove rider from form, transfer to synced dataframe
             df.at[d_idx, DRIVER_OPENINGS_KEY] -= 1
             entry = out.iloc[[idx]]
             rider_loc = LOC_MAP.get(entry.at[entry.index[0], RIDER_LOCATION_KEY], ELSEWHERE_CODE)
@@ -138,11 +148,11 @@ def _is_free(driver: pd.Series) -> bool:
     return driver[DRIVER_ROUTE_KEY] == DEFAULT_LOCS_CODE
 
 
-def _is_nearby_or_open(driver: pd.Series, rider_loc: int) -> bool:
+def _is_nearby_n(driver: pd.Series, rider_loc: int, dist: int) -> bool:
     """Checks if driver has no assignments or is already picking up at the same area as the rider.
     """
     driver_loc = driver[DRIVER_ROUTE_KEY]
-    return _has_opening(driver) and (_is_free(driver) or _is_intersecting(driver_loc << 1, rider_loc) or _is_intersecting(driver_loc >> 1, rider_loc))
+    return _has_opening(driver) and (_is_free(driver) or _is_intersecting(driver_loc << dist, rider_loc) or _is_intersecting(driver_loc >> dist, rider_loc))
 
 
 def _is_there_or_open(driver: pd.Series, rider_loc: int) -> bool:
@@ -153,4 +163,6 @@ def _is_there_or_open(driver: pd.Series, rider_loc: int) -> bool:
 
 
 def _is_intersecting(loc1: int, loc2: int) -> bool:
+    """Checks if a driver route intersects with a location.
+    """
     return (loc1 & loc2) != 0
