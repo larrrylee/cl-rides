@@ -15,7 +15,7 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool = False) -> pd.DataFr
 
     PRECONDITION: add_temporaries must have been called on df.
     """
-    rf.sort_values(by=RIDER_LOCATION_KEY, inplace=True, key=lambda col: col.apply(lambda loc: loc_map.get(loc, elsewhere_code)))
+    rf.sort_values(by=RIDER_LOCATION_KEY, inplace=True, key=lambda col: col.apply(lambda loc: loc_map.get(loc, loc_map[ELSEWHERE])))
     out = pd.concat([pd.DataFrame(columns=[OUTPUT_DRIVER_NAME_KEY, OUTPUT_DRIVER_PHONE_KEY]), rf[[RIDER_NAME_KEY, RIDER_PHONE_KEY, RIDER_LOCATION_KEY, RIDER_NOTES_KEY]]], axis='columns')
     out.reset_index(inplace=True, drop=True)    # TODO: possibly remove
 
@@ -27,13 +27,13 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool = False) -> pd.DataFr
         print('Assigning started')
 
     for r_idx in out.index:
-        rider_loc = loc_map.get(out.at[r_idx, RIDER_LOCATION_KEY], elsewhere_code)
+        rider_loc = loc_map.get(out.at[r_idx, RIDER_LOCATION_KEY], loc_map[ELSEWHERE])
 
-        if rider_loc == elsewhere_code:
-            #TODO: do not assign for now
-            if debug:
-                print(f'\t{out.at[r_idx, RIDER_NAME_KEY]} is not from a prerecorded location, assigning skipped')
-            continue
+#        if rider_loc == elsewhere_code:
+#            #TODO: do not assign for now
+#            if debug:
+#                print(f'\t{out.at[r_idx, RIDER_NAME_KEY]} is not from a prerecorded location, assigning skipped')
+#            continue
 
         is_matched = False
 
@@ -91,7 +91,7 @@ def sync_to_last_assignments(df: pd.DataFrame, rf: pd.DataFrame, out: pd.DataFra
             # update driver stats, remove rider from form, transfer to synced dataframe
             df.at[d_idx, DRIVER_OPENINGS_KEY] -= 1
             entry = out.iloc[[idx]]
-            rider_loc = loc_map.get(entry.at[entry.index[0], RIDER_LOCATION_KEY], elsewhere_code)
+            rider_loc = loc_map.get(entry.at[entry.index[0], RIDER_LOCATION_KEY], loc_map[ELSEWHERE])
             df.at[d_idx, DRIVER_ROUTE_KEY] |= rider_loc
             rf.drop(rf[rf[RIDER_PHONE_KEY] == entry.at[entry.index[0], RIDER_PHONE_KEY]].index, inplace=True)
             synced_out = pd.concat([synced_out, entry])
@@ -125,7 +125,7 @@ def _add_rider(out: pd.DataFrame, r_idx: int, df: pd.DataFrame, d_idx: int):
     """
     out.at[r_idx, OUTPUT_DRIVER_NAME_KEY] = df.at[d_idx, DRIVER_NAME_KEY]
     out.at[r_idx, OUTPUT_DRIVER_PHONE_KEY] = df.at[d_idx, DRIVER_PHONE_KEY]
-    rider_loc = loc_map.get(out.at[r_idx, RIDER_LOCATION_KEY], elsewhere_code)
+    rider_loc = loc_map.get(out.at[r_idx, RIDER_LOCATION_KEY], loc_map[ELSEWHERE])
     df.at[d_idx, DRIVER_OPENINGS_KEY] -= 1
     df.at[d_idx, DRIVER_ROUTE_KEY] |= rider_loc
     df.at[d_idx, DRIVER_TIMESTAMP_KEY] = Timestamp.now()

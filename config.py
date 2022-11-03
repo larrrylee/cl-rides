@@ -52,12 +52,12 @@ PEPPER_CANYON = 'Pepper Canyon Apts'
 RITA_ATKINSON = 'Rita Atkinson'
 REGENTS = 'Regents'
 COSTA_VERDE = 'Costa Verde'
+ELSEWHERE = 'ELSEWHERE'
 
 DRIVER_OPENINGS_KEY = 'Open seats'
 DRIVER_ROUTE_KEY = 'Locations'
 
 DEFAULT_LOCS_CODE = 0b0
-elsewhere_code = 0b0
 
 loc_map = {
     REVELLE:       0b0,
@@ -70,5 +70,6 @@ loc_map = {
     PEPPER_CANYON: 0b0,
     RITA_ATKINSON: 0b0,
     REGENTS:       0b0,
-    COSTA_VERDE:   0b0
+    COSTA_VERDE:   0b0,
+    ELSEWHERE:     0b0,
 }

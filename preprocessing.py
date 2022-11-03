@@ -7,8 +7,6 @@ import pandas as pd
 
 def load_map():
     """Loads map.txt into a dictionary of bitmaps for the hardcoded locations."""
-    global elsewhere_code
-
     with open("map.txt", "r") as map:
         loc = 0b1
         for line in map.readlines():
@@ -20,8 +18,6 @@ def load_map():
                 if key in places:
                     loc_map[key] |= loc
             loc <<= 1
-        
-        elsewhere_code = loc << 1
 
 
 def clean_data(df: pd.DataFrame, rf: pd.DataFrame):
