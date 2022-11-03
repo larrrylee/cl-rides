@@ -80,6 +80,8 @@ def _find_driver_cnt(df: pd.DataFrame, cnt_riders: int) -> int:
     for cnt, idx in enumerate(df.index):
         if cnt_riders > 0:
             cnt_riders -= df.at[idx, DRIVER_CAPACITY_KEY]
+        else:
+            break
     return cnt
 
 

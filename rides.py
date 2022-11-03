@@ -48,12 +48,8 @@ def main(update: bool, friday: bool, clear: bool, debug: bool) -> None:
     else:
         out = group.assign_sunday(drivers, riders, clear, debug)
     
-    data.update_drivers_locally(drivers)
-
     # Print output
     if debug:
-        print('Driver output')
-        print(drivers)
         print('Assignments output')
         print(out)
 

@@ -105,7 +105,10 @@ def assign_sunday(df: pd.DataFrame, rf: pd.DataFrame, clear: bool, debug: bool) 
     drivers = prep.prep_necessary_drivers(df, len(riders))
     out = assign(drivers, riders, debug)
     post.alert_skipped_riders(out, debug)
-    post.clean_output(out, df)
+    post.clean_output(out)
+    if debug:
+        print('Assigned Drivers')
+        print(drivers)
     return out
 
 
@@ -116,7 +119,10 @@ def assign_friday(df: pd.DataFrame, rf: pd.DataFrame, clear: bool, debug: bool) 
     drivers = prep.prep_necessary_drivers(df, len(riders))
     out = assign(drivers, riders, debug)
     post.alert_skipped_riders(out, debug)
-    post.clean_output(out, df)
+    post.clean_output(out)
+    if debug:
+        print('Assigned Drivers')
+        print(drivers)
     return out
 
 
