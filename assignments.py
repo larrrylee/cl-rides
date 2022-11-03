@@ -29,11 +29,11 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool = False) -> pd.DataFr
     for r_idx in out.index:
         rider_loc = loc_map.get(out.at[r_idx, RIDER_LOCATION_KEY], loc_map[ELSEWHERE])
 
-#        if rider_loc == elsewhere_code:
-#            #TODO: do not assign for now
-#            if debug:
-#                print(f'\t{out.at[r_idx, RIDER_NAME_KEY]} is not from a prerecorded location, assigning skipped')
-#            continue
+        if rider_loc == loc_map[ELSEWHERE]:
+            #TODO: do not assign for now
+            if debug:
+                print(f'\t{out.at[r_idx, RIDER_NAME_KEY]} is not from a prerecorded location, assigning skipped')
+            continue
 
         is_matched = False
 
