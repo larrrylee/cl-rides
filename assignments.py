@@ -2,7 +2,6 @@
 Includes group optimization for common pickup locations.
 """
 
-from sqlite3 import Timestamp
 from config import *
 import pandas as pd
 import postprocessing as post
@@ -13,11 +12,10 @@ from rides_data import *
 def assign(drivers_df: pd.DataFrame, riders_df: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
     """Assigns rider to drivers in the returned dataframe, and updates driver timestamp for the last time they drove.
 
-    PRECONDITION: add_temporaries must have been called on df.
+    PRECONDITION: add_temporaries must have been called on drivers_df.
     """
     riders_df.sort_values(by=RIDER_LOCATION_KEY, inplace=True, key=lambda col: col.apply(lambda loc: loc_map.get(loc, loc_map[ELSEWHERE])))
     out = pd.concat([pd.DataFrame(columns=[OUTPUT_DRIVER_NAME_KEY, OUTPUT_DRIVER_PHONE_KEY]), riders_df[[RIDER_NAME_KEY, RIDER_PHONE_KEY, RIDER_LOCATION_KEY, RIDER_NOTES_KEY]]], axis='columns')
-    out.reset_index(inplace=True, drop=True)    # TODO: possibly remove
 
     if debug:
         print('Drivers')
@@ -37,13 +35,24 @@ def assign(drivers_df: pd.DataFrame, riders_df: pd.DataFrame, debug: bool = Fals
 
         is_matched = False
 
-        # Check if a driver is already there or one place away.
+        # Check if a driver is already there.
         for d_idx, driver in drivers_df.iterrows():
             if _is_there_or_open(driver, rider_loc):
                 _add_rider(out, r_idx, drivers_df, d_idx)
                 is_matched = True
                 break
-            if _is_nearby_n(driver, rider_loc, 1):
+            if _is_nearby_dist(driver, rider_loc, 1) and driver[DRIVER_OPENINGS_KEY] >= GROUPING_MARGIN:
+                # If a driver is one spot away and are not going "out of their way", that driver will get assigned.
+                _add_rider(out, r_idx, drivers_df, d_idx)
+                is_matched = True
+                break
+
+        if is_matched:
+            continue
+
+        # Check if a driver route is one place away.
+        for d_idx, driver in drivers_df.iterrows():
+            if _is_nearby_dist(driver, rider_loc, 1):
                 _add_rider(out, r_idx, drivers_df, d_idx)
                 is_matched = True
                 break
@@ -53,7 +62,7 @@ def assign(drivers_df: pd.DataFrame, riders_df: pd.DataFrame, debug: bool = Fals
 
         # Check if a driver route is two places away.
         for d_idx, driver in drivers_df.iterrows():
-            if _is_nearby_n(driver, rider_loc, 2):
+            if _is_nearby_dist(driver, rider_loc, 2):
                 _add_rider(out, r_idx, drivers_df, d_idx)
                 is_matched = True
                 break
@@ -75,7 +84,7 @@ def sync_to_last_assignments(drivers_df: pd.DataFrame, riders_df: pd.DataFrame, 
     """Synchronize driver stats to reflect the precalculated assignments. Preassigned riders will be removed from `rf`.
 
     If synchronization is not possible with the given drivers, the output will be adjusted to match driver availability.
-    PRECONDITION: add_temporaries must have been called on df.
+    PRECONDITION: add_temporaries must have been called on drivers_df.
     """
     synced_out = pd.DataFrame()
     d_idx = None
@@ -133,7 +142,7 @@ def _add_rider(out: pd.DataFrame, r_idx: int, drivers_df: pd.DataFrame, d_idx: i
     drivers_df.at[d_idx, DRIVER_ROUTE_KEY] |= rider_loc
 
 
-def _is_nearby_n(driver: pd.Series, rider_loc: int, dist: int) -> bool:
+def _is_nearby_dist(driver: pd.Series, rider_loc: int, dist: int) -> bool:
     """Checks if driver has no assignments or is already picking up at the same area as the rider.
     """
     return _has_opening(driver) and (_is_free(driver) or _is_intersecting(driver, rider_loc << dist) or _is_intersecting(driver, rider_loc >> dist))

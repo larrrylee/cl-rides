@@ -23,7 +23,7 @@ def format_output(out: pd.DataFrame):
             # Denote unassigned riders.
             out.at[idx, OUTPUT_DRIVER_NAME_KEY] = '?'
             out.at[idx, OUTPUT_DRIVER_PHONE_KEY] = '?'
-        elif out.at[idx, OUTPUT_DRIVER_NAME_KEY] == out.at[idx-1, OUTPUT_DRIVER_NAME_KEY]:
+        elif out.at[idx, OUTPUT_DRIVER_NAME_KEY] == out.at[idx - 1, OUTPUT_DRIVER_NAME_KEY]:
             # Remove redundant driver details.
             out.at[idx, OUTPUT_DRIVER_NAME_KEY] = ''
             out.at[idx, OUTPUT_DRIVER_PHONE_KEY] = ''
