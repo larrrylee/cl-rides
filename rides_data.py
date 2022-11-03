@@ -1,7 +1,7 @@
 """Implements usage of the Google Sheets API, including reading driver/rider data and writing to the output sheet.
 """
 
-from constants import *
+from config import *
 import gspread
 from gspread_dataframe import set_with_dataframe
 import json

@@ -16,6 +16,7 @@ def run_sunday():
 
 
 def test_sync():
+    prep.load_map()
     (drivers, riders) = data.get_cached_data()
     prev_out = data.get_prev_assignments()
     prep.clean_data(drivers, riders)

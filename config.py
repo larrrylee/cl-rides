@@ -53,36 +53,22 @@ RITA_ATKINSON = 'Rita Atkinson'
 REGENTS = 'Regents'
 COSTA_VERDE = 'Costa Verde'
 
-### Enumerating locations, consecutive numbers => neighboring locations
-REVELLE_LOC = 0
-MUIR_LOC = REVELLE_LOC + 1
-SIXTH_LOC = MUIR_LOC + 1
-MARSHALL_LOC = SIXTH_LOC + 1
-ERC_LOC = MARSHALL_LOC + 1
-SEVENTH_LOC = ERC_LOC + 1
-WARREN_LOC = SEVENTH_LOC + 1
-PEPPER_CANYON_LOC = WARREN_LOC + 1
-RITA_ATKINSON_LOC = PEPPER_CANYON_LOC + 2   # gap
-REGENTS_LOC = RITA_ATKINSON_LOC + 2         # gap
-COSTA_VERDE_LOC = REGENTS_LOC + 1
-
-ELSEWHERE_CODE = ~(COSTA_VERDE_LOC | (COSTA_VERDE_LOC - 1)) << 1
-DEFAULT_LOCS_CODE = 0b0
-
 DRIVER_OPENINGS_KEY = 'Open seats'
 DRIVER_ROUTE_KEY = 'Locations'
 
-### Converting enumeration to bitmap, allows to check for location intersection by bitmasking
-LOC_MAP = {
-    REVELLE:       0b1 << REVELLE_LOC,
-    MUIR:          0b1 << MUIR_LOC,
-    SIXTH:         0b1 << SIXTH_LOC,
-    MARSHALL:      0b1 << MARSHALL_LOC,
-    ERC:           0b1 << ERC_LOC,
-    SEVENTH:       0b1 << SEVENTH_LOC,
-    WARREN:        0b1 << WARREN_LOC,
-    PEPPER_CANYON: 0b1 << PEPPER_CANYON_LOC,
-    RITA_ATKINSON: 0b1 << RITA_ATKINSON_LOC,
-    REGENTS:       0b1 << REGENTS_LOC,
-    COSTA_VERDE:   0b1 << COSTA_VERDE_LOC
+DEFAULT_LOCS_CODE = 0b0
+elsewhere_code = 0b0
+
+loc_map = {
+    REVELLE:       0b0,
+    MUIR:          0b0,
+    SIXTH:         0b0,
+    MARSHALL:      0b0,
+    ERC:           0b0,
+    SEVENTH:       0b0,
+    WARREN:        0b0,
+    PEPPER_CANYON: 0b0,
+    RITA_ATKINSON: 0b0,
+    REGENTS:       0b0,
+    COSTA_VERDE:   0b0
 }

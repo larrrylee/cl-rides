@@ -30,6 +30,7 @@ def show_usage() -> None:
 def main(update: bool, friday: bool, clear: bool, debug: bool) -> None:
     """ Assign riders to drivers, updating the sheet if specified
     """
+    prep.load_map()
 
     # Fetch data from sheets
     if update:

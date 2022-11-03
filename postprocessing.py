@@ -1,7 +1,7 @@
 """Implements all the postprocessing functionality for the results.
 """
 
-from constants import *
+from config import *
 import numpy as np
 import pandas as pd
 
