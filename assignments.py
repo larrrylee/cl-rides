@@ -101,9 +101,9 @@ def sync_to_last_assignments(df: pd.DataFrame, rf: pd.DataFrame, out: pd.DataFra
 def assign_sunday(df: pd.DataFrame, rf: pd.DataFrame, clear: bool, debug: bool) -> pd.DataFrame:
     """Assigns Sunday rides.
     """
-    rf = prep.filter_sunday(rf)
-    prep.add_temporaries(df)
-    out = assign(df, rf, debug)
+    riders = prep.filter_sunday(rf)
+    drivers = prep.prep_necessary_drivers(df, len(riders))
+    out = assign(drivers, riders, debug)
     post.alert_skipped_riders(out, debug)
     post.clean_output(out, df)
     return out
@@ -112,9 +112,9 @@ def assign_sunday(df: pd.DataFrame, rf: pd.DataFrame, clear: bool, debug: bool) 
 def assign_friday(df: pd.DataFrame, rf: pd.DataFrame, clear: bool, debug: bool) -> pd.DataFrame:
     """Assigns Friday rides.
     """
-    rf = prep.filter_friday(rf)
-    prep.add_temporaries(df)
-    out = assign(df, rf, debug)
+    riders = prep.filter_friday(rf)
+    drivers = prep.prep_necessary_drivers(df, len(riders))
+    out = assign(drivers, riders, debug)
     post.alert_skipped_riders(out, debug)
     post.clean_output(out, df)
     return out

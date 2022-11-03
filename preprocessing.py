@@ -32,23 +32,40 @@ def standardize_weekly_responses(rf: pd.DataFrame):
         rf.at[idx, WEEKLY_RIDER_SUNDAY_KEY] = RIDE_THERE_KEYWORD if WEEKLY_RIDE_THERE_KEYWORD in response.lower() else ''
 
 
-def filter_friday(rf: pd.DataFrame):
+def filter_friday(rf: pd.DataFrame) -> pd.DataFrame:
     """Filters riders that will attend Friday College Life.
     """
     return rf[rf[RIDER_FRIDAY_KEY] == RIDE_THERE_KEYWORD]
 
 
-def filter_sunday(rf: pd.DataFrame):
+def filter_sunday(rf: pd.DataFrame) -> pd.DataFrame:
     """Filters riders that will attend Sunday service.
     """
     return rf[rf[RIDER_SUNDAY_KEY] == RIDE_THERE_KEYWORD]
 
 
-def add_temporaries(df: pd.DataFrame):
+def prep_necessary_drivers(df: pd.DataFrame, cnt_riders: int) -> pd.DataFrame:
+    driver_cnt = _find_driver_cnt(df, cnt_riders)
+    drivers = df[:driver_cnt]
+    drivers.sort_values(by=DRIVER_CAPACITY_KEY, ascending=False, inplace=True)
+    _add_temporaries(drivers)
+    return drivers
+
+
+def _add_temporaries(df: pd.DataFrame):
     """Adds temporary columns to the dataframes for calculating assignments.
     """
     df[DRIVER_OPENINGS_KEY] = df[DRIVER_CAPACITY_KEY]
     df[DRIVER_ROUTE_KEY] = DEFAULT_LOCS_CODE
+
+
+def _find_driver_cnt(df: pd.DataFrame, cnt_riders: int) -> int:
+    """Determines how many drivers are needed to give rides to all the riders.
+    """
+    for cnt, idx in enumerate(df.index):
+        if cnt_riders > 0:
+            cnt_riders -= df.at[idx, DRIVER_CAPACITY_KEY]
+    return cnt
 
 
 def _filter_data(df: pd.DataFrame, rf: pd.DataFrame):
