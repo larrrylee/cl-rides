@@ -108,7 +108,7 @@ def get_prev_assignments() -> pd.DataFrame:
     return pd.DataFrame(records)
 
 
-def update_drivers(drivers: pd.DataFrame):
+def update_drivers(drivers_df: pd.DataFrame):
     """Write the given dataframe to the driver sheet.
     """
     with open(SHEET_ID_FILE) as gid_json:
@@ -120,10 +120,10 @@ def update_drivers(drivers: pd.DataFrame):
 
     #TODO: use batch updates to use only one API call
     ws.clear()
-    set_with_dataframe(worksheet=ws, dataframe=drivers)
+    set_with_dataframe(worksheet=ws, dataframe=drivers_df)
 
 
-def update_drivers_locally(drivers: pd.DataFrame):
+def update_drivers_locally(drivers_df: pd.DataFrame):
     """Write the given dataframe to the drivers pickle file.
     """
-    drivers.to_pickle(os.path.join(DATA_PATH, DRIVER_SHEET_KEY))
+    drivers_df.to_pickle(os.path.join(DATA_PATH, DRIVER_SHEET_KEY))

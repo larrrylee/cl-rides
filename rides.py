@@ -21,7 +21,7 @@ def show_usage() -> None:
     print('    --debug               Prints out debug statements while running')
     print('    --help                Shows usage')
     print('    --friday              Assigns rides for Friday College Life')
-    print('    --sunday              Assigns rides for sunday service')
+    print('    --sunday              Assigns rides for Sunday service')
     print('    --clear               Previous assignments are cleared and drivers are rotated based on date last driven')
     print('    --no-clear            Previous assignments are retained and new assignments are appended')
     print()
@@ -44,9 +44,9 @@ def main(update: bool, friday: bool, clear: bool, debug: bool) -> None:
     (drivers, riders) = data.get_cached_data()
     prep.clean_data(drivers, riders)
     if friday:
-        out = group.assign_friday(drivers, riders, clear, debug)
+        out = group.assign_friday(drivers, riders, debug)
     else:
-        out = group.assign_sunday(drivers, riders, clear, debug)
+        out = group.assign_sunday(drivers, riders, debug)
     
     # Print output
     if debug:
@@ -55,7 +55,6 @@ def main(update: bool, friday: bool, clear: bool, debug: bool) -> None:
 
     if update:
         data.write_assignments(out)
-        #data.update_drivers(drivers)
 
 
 if __name__ == '__main__':
