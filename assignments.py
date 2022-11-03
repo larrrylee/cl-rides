@@ -134,7 +134,6 @@ def _add_rider(out: pd.DataFrame, r_idx: int, df: pd.DataFrame, d_idx: int):
     rider_loc = loc_map.get(out.at[r_idx, RIDER_LOCATION_KEY], loc_map[ELSEWHERE])
     df.at[d_idx, DRIVER_OPENINGS_KEY] -= 1
     df.at[d_idx, DRIVER_ROUTE_KEY] |= rider_loc
-    df.at[d_idx, DRIVER_TIMESTAMP_KEY] = Timestamp.now()
 
 
 def _is_nearby_n(driver: pd.Series, rider_loc: int, dist: int) -> bool:
