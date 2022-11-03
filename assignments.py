@@ -15,6 +15,7 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool = False) -> pd.DataFr
 
     PRECONDITION: add_temporaries must have been called on df.
     """
+    rf.sort_values(by=RIDER_LOCATION_KEY, inplace=True, key=lambda col: col.apply(lambda loc: LOC_MAP.get(loc, ELSEWHERE_CODE)))
     out = pd.concat([pd.DataFrame(columns=[OUTPUT_DRIVER_NAME_KEY, OUTPUT_DRIVER_PHONE_KEY]), rf[[RIDER_NAME_KEY, RIDER_PHONE_KEY, RIDER_LOCATION_KEY, RIDER_NOTES_KEY]]], axis='columns')
     out.reset_index(inplace=True, drop=True)    # TODO: possibly remove
 
@@ -36,18 +37,12 @@ def assign(df: pd.DataFrame, rf: pd.DataFrame, debug: bool = False) -> pd.DataFr
 
         is_matched = False
 
-        # Check if a driver is already there.
+        # Check if a driver is already there or one place away.
         for d_idx, driver in df.iterrows():
             if _is_there_or_open(driver, rider_loc):
                 _add_rider(out, r_idx, df, d_idx)
                 is_matched = True
                 break
-
-        if is_matched:
-            continue
-
-        # Check if a driver route is one place away.
-        for d_idx, driver in df.iterrows():
             if _is_nearby_n(driver, rider_loc, 1):
                 _add_rider(out, r_idx, df, d_idx)
                 is_matched = True
@@ -103,7 +98,7 @@ def sync_to_last_assignments(df: pd.DataFrame, rf: pd.DataFrame, out: pd.DataFra
     return synced_out
 
 
-def assign_sunday(df: pd.DataFrame, rf: pd.DataFrame, debug: bool) -> pd.DataFrame:
+def assign_sunday(df: pd.DataFrame, rf: pd.DataFrame, clear: bool, debug: bool) -> pd.DataFrame:
     """Assigns Sunday rides.
     """
     rf = prep.filter_sunday(rf)
@@ -114,7 +109,7 @@ def assign_sunday(df: pd.DataFrame, rf: pd.DataFrame, debug: bool) -> pd.DataFra
     return out
 
 
-def assign_friday(df: pd.DataFrame, rf: pd.DataFrame, debug: bool) -> pd.DataFrame:
+def assign_friday(df: pd.DataFrame, rf: pd.DataFrame, clear: bool, debug: bool) -> pd.DataFrame:
     """Assigns Friday rides.
     """
     rf = prep.filter_friday(rf)

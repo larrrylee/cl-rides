@@ -3,10 +3,19 @@
 
 import assignments as group
 import preprocessing as prep
+import rides
 import rides_data as data
 
 
 def main():
+    run_sunday()
+
+
+def run_sunday():
+    rides.main(True, False, True, True)
+
+
+def test_sync():
     (drivers, riders) = data.get_cached_data()
     prev_out = data.get_prev_assignments()
     prep.clean_data(drivers, riders)
