@@ -29,11 +29,6 @@ def format_output(out: pd.DataFrame):
             out.at[idx, OUTPUT_DRIVER_PHONE_KEY] = ''
 
 
-def rotate_drivers(drivers_df: pd.DataFrame):
-    """Reorders the drivers by last pickup date.
-    """
-    drivers_df.sort_values(by=DRIVER_TIMESTAMP_KEY, inplace=True)
-
 def alert_skipped_riders(out: pd.DataFrame, debug: bool):
     """Prints out all the riders who do not have a driver."""
     if debug:

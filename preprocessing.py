@@ -3,6 +3,7 @@
 
 from config import *
 import pandas as pd
+from sqlite3 import Timestamp
 
 
 def load_map():
@@ -19,6 +20,52 @@ def load_map():
                 if key in places:
                     loc_map[key] |= loc
             loc <<= 1
+
+
+def sync_to_last_assignments(drivers_df: pd.DataFrame, riders_df: pd.DataFrame, out: pd.DataFrame) -> pd.DataFrame:
+    """Synchronize driver stats to reflect the precalculated assignments. Preassigned riders will be removed from `rf`.
+
+    If synchronization is not possible with the given drivers, the output will be adjusted to match driver availability.
+    PRECONDITION: add_temporaries must have been called on drivers_df.
+    """
+    synced_out = pd.DataFrame()
+    d_idx = None
+    valid = False
+    for idx in out.index:
+        phone = out.at[idx, OUTPUT_DRIVER_PHONE_KEY]
+        if phone != '':
+            # Found new driver phone
+            d_idx = drivers_df[drivers_df[DRIVER_PHONE_KEY] == phone].first_valid_index()
+            valid = d_idx is not None
+
+        if valid:
+            # update driver stats, remove rider from form, transfer to synced dataframe
+            drivers_df.at[d_idx, DRIVER_OPENINGS_KEY] -= 1
+            entry = out.iloc[[idx]]
+            rider_loc = loc_map.get(entry.at[entry.index[0], RIDER_LOCATION_KEY], loc_map[ELSEWHERE])
+            drivers_df.at[d_idx, DRIVER_ROUTE_KEY] |= rider_loc
+            riders_df.drop(riders_df[riders_df[RIDER_PHONE_KEY] == entry.at[entry.index[0], RIDER_PHONE_KEY]].index, inplace=True)
+            synced_out = pd.concat([synced_out, entry])
+
+    return synced_out
+
+
+def get_prev_driver_phones(prev_out: pd.DataFrame) -> set:
+    """Returns all the phone numbers of the drivers from the previous grouping.
+    """
+    phone_nums = set()
+    for phone in prev_out[OUTPUT_DRIVER_PHONE_KEY]:
+        phone_nums.add(phone)
+    return phone_nums
+
+
+def rotate_drivers(drivers_df: pd.DataFrame, driver_nums: set):
+    """Updates the driver's last driven date and rotates them accordingly.
+    """
+    for idx in drivers_df.index:
+        if drivers_df.at[idx, DRIVER_PHONE_KEY] in driver_nums:
+            drivers_df.at[idx, DRIVER_TIMESTAMP_KEY] = Timestamp.now()
+    drivers_df.sort_values(by=DRIVER_TIMESTAMP_KEY, inplace=True)
 
 
 def clean_data(drivers_df: pd.DataFrame, riders_df: pd.DataFrame):

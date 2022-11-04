@@ -33,7 +33,7 @@ def test_sync():
 
     riders = prep.filter_sunday(riders)
     prep._add_temporaries(drivers)
-    out = group.sync_to_last_assignments(drivers, riders, prev_out)
+    out = prep.sync_to_last_assignments(drivers, riders, prev_out)
 
     print('Drivers OUT --------------------------------')
     print(drivers)

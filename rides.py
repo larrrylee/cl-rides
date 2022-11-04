@@ -39,10 +39,18 @@ def main(update: bool, friday: bool, clear: bool, debug: bool) -> None:
     # Print input
     if debug:
         data.print_pickles()
-
-    # Execute the assignment algorithm
+    
     (drivers, riders) = data.get_cached_data()
     prep.clean_data(drivers, riders)
+    prev_out = data.get_prev_assignments()
+
+    # Rotate drivers if clearing
+    if clear:
+        prep.rotate_drivers(drivers, prep.get_prev_driver_phones(prev_out))
+        data.update_drivers_locally(drivers)
+        pass
+
+    # Execute the assignment algorithm
     if friday:
         out = group.assign_friday(drivers, riders, debug)
     else:
