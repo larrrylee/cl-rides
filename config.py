@@ -58,7 +58,10 @@ DRIVER_OPENINGS_KEY = 'Open seats'
 DRIVER_ROUTE_KEY = 'Locations'
 
 # The number of openings required for a car to freely pick up from a neighboring location
-GROUPING_MARGIN = 3
+GROUPING_THRESHOLD = 'threshold'
+GLOBALS = {
+    GROUPING_THRESHOLD: 2
+}
 
 # Route codes
 DEFAULT_LOCS_CODE = 0b0

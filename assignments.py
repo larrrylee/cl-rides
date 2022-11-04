@@ -41,7 +41,7 @@ def assign(drivers_df: pd.DataFrame, riders_df: pd.DataFrame, debug: bool = Fals
                 _add_rider(out, r_idx, drivers_df, d_idx)
                 is_matched = True
                 break
-            if _is_nearby_dist(driver, rider_loc, 1) and driver[DRIVER_OPENINGS_KEY] >= GROUPING_MARGIN:
+            if _is_nearby_dist(driver, rider_loc, 1) and driver[DRIVER_OPENINGS_KEY] >= GLOBALS[GROUPING_THRESHOLD]:
                 # If a driver is one spot away and are not going "out of their way", that driver will get assigned.
                 _add_rider(out, r_idx, drivers_df, d_idx)
                 is_matched = True

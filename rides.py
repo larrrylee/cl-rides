@@ -5,6 +5,7 @@ Usage:
 """
 
 import assignments as group
+from config import GLOBALS, GROUPING_THRESHOLD
 import preprocessing as prep
 import rides_data as data
 import sys
@@ -17,23 +18,25 @@ def show_usage() -> None:
     print('python rides.py <--friday | --sunday> <--clear | --no-clear> [[FLAG] ...]')
     print()
     print('FLAG')
-    print('    --update              Fetches new data from the sheet and updates the output sheet')
-    print('    --debug               Prints out debug statements while running')
     print('    --help                Shows usage')
+    print('    --debug               Prints out debug statements while running')
+    print('    --fetch               Fetches new data from the sheet')
+    print('    --update              Updates the output sheet')
+    print('    --rotate              Previous assignments are cleared and drivers are rotated based on date last driven')
+    print('    --edit                Previous assignments are retained and new assignments are appended')
     print('    --friday              Assigns rides for Friday College Life')
     print('    --sunday              Assigns rides for Sunday service')
-    print('    --clear               Previous assignments are cleared and drivers are rotated based on date last driven')
-    print('    --no-clear            Previous assignments are retained and new assignments are appended')
+    print('    --threshold=<num>     Sets how many open spots a driver must have to pick up at an additional location. The default is 2.')
     print()
 
 
-def main(update: bool, friday: bool, clear: bool, debug: bool) -> None:
+def main(fetch: bool, update: bool, rotate: bool, edit: bool, friday: bool, debug: bool) -> None:
     """ Assign riders to drivers, updating the sheet if specified
     """
     prep.load_map()
 
     # Fetch data from sheets
-    if update:
+    if fetch:
         data.update_pickles()
 
     # Print input
@@ -42,13 +45,17 @@ def main(update: bool, friday: bool, clear: bool, debug: bool) -> None:
     
     (drivers, riders) = data.get_cached_data()
     prep.clean_data(drivers, riders)
-    prev_out = data.get_prev_assignments()
 
-    # Rotate drivers if clearing
-    if clear:
-        prep.rotate_drivers(drivers, prep.get_prev_driver_phones(prev_out))
-        data.update_drivers_locally(drivers)
-        pass
+    # Do requested preprocessing
+    if rotate or edit:
+        prev_out = data.get_prev_assignments()
+        if rotate:
+            # Rotate drivers by last date driven
+            prep.rotate_drivers(drivers, prep.get_prev_driver_phones(prev_out))
+            data.update_drivers_locally(drivers)
+        elif edit:
+            #TODO: Load previous output into assignments
+            pass
 
     # Execute the assignment algorithm
     if friday:
@@ -68,33 +75,41 @@ def main(update: bool, friday: bool, clear: bool, debug: bool) -> None:
 if __name__ == '__main__':
     execute = True
     update = False
+    fetch = False
     debug = False
+    rotate = False
+    edit = False
     friday = False
     sunday = False
-    clear = False
-    no_clear = False
 
     for argv in sys.argv[1:]:
-        if argv == '--update':
-            update = True
+        if argv == '--help':
+            execute = False
         elif argv == '--debug':
             debug = True
-        elif argv == '--help':
-            execute = False
+        elif argv == '--fetch':
+            fetch = True
+        elif argv == '--update':
+            update = True
+        elif argv == '--rotate':
+            rotate = True
+        elif argv == '--edit':
+            edit = True
         elif argv == '--friday':
             friday = True
         elif argv == '--sunday':
             sunday = True
-        elif argv == '--clear':
-            clear = True
-        elif argv == '--no-clear':
-            no_clear = True
+        elif argv.find('--threshold') != -1:
+            try:
+                GLOBALS[GROUPING_THRESHOLD] = int(argv.split('=').pop())
+            except:
+                execute = False
     
     valid_day = friday != sunday
-    valid_clear_opt = clear != no_clear
+    valid_clear_opt = not (rotate and edit)
     execute = execute and valid_day and valid_clear_opt
 
     if execute:
-        main(update, friday, clear, debug)
+        main(fetch, update, rotate, edit, friday, debug)
     else:
         show_usage()

@@ -102,6 +102,7 @@ def write_assignments(assignments: pd.DataFrame):
 def get_prev_assignments() -> pd.DataFrame:
     """Get the assignments that were calculated from the last grouping.
     """
+    print('Fetching previous output')
     gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
     ws = gc.open_by_key(FINAL_SHEET_ID).get_worksheet(0)
     records = ws.get_all_records()

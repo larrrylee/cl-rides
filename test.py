@@ -8,11 +8,15 @@ import rides_data as data
 
 
 def main():
-    run_sunday()
+    run_sunday_local()
 
 
 def run_sunday():
-    rides.main(True, False, True, True)
+    rides.main(True, True, False, False, False, True)
+
+
+def run_sunday_local():
+    rides.main(False, False, False, False, False, True)
 
 
 def test_sync():
