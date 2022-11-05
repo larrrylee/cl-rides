@@ -20,13 +20,13 @@ def show_usage() -> None:
     print('FLAG')
     print('    --help                Shows usage')
     print('    --debug               Prints out debug statements while running')
-    print('    --fetch               Fetches new data from the sheet')
-    print('    --update              Updates the output sheet')
+    print('    --no-fetch            Prevents new sheet data from being fetched')
+    print('    --no-update           Prevents the output sheet from being updated')
     print('    --rotate              Previous assignments are cleared and drivers are rotated based on date last driven')
     print('    --edit                Previous assignments are retained and new assignments are appended')
     print('    --friday              Assigns rides for Friday College Life')
     print('    --sunday              Assigns rides for Sunday service')
-    print('    --threshold=<num>     Sets how many open spots a driver must have to pick up at an additional location. The default is 2.')
+    print('    --threshold=<num>     Sets how many open spots a driver must have to spontaneously pick up at a neighboring location. The default is 2.')
     print()
 
 
@@ -74,8 +74,8 @@ def main(fetch: bool, update: bool, rotate: bool, edit: bool, friday: bool, debu
 
 if __name__ == '__main__':
     execute = True
-    update = False
-    fetch = False
+    update = True
+    fetch = True
     debug = False
     rotate = False
     edit = False
@@ -87,10 +87,10 @@ if __name__ == '__main__':
             execute = False
         elif argv == '--debug':
             debug = True
-        elif argv == '--fetch':
-            fetch = True
-        elif argv == '--update':
-            update = True
+        elif argv == '--no-fetch':
+            fetch = False
+        elif argv == '--no-update':
+            update = False
         elif argv == '--rotate':
             rotate = True
         elif argv == '--edit':

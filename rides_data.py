@@ -90,6 +90,7 @@ def get_cached_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
 def write_assignments(assignments: pd.DataFrame):
     """Write the given dataframe to the final Google Sheet.
     """
+    print('Writing assignments')
     # connect Google Sheets
     gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
     ws = gc.open_by_key(FINAL_SHEET_ID).get_worksheet(0)
