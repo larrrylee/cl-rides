@@ -14,8 +14,10 @@ from typing import Tuple
 
 DATA_PATH = 'pickle'
 SHEET_ID_FILE = 'sheet_ids.json'
+PERMANENT_SHEET_KEY = 'permanent'
+WEEKLY_SHEET_KEY = 'weekly'
 DRIVER_SHEET_KEY = 'drivers'
-FINAL_SHEET_ID = "15KJPVqZT6pMq8Qg4qufx9iZOArzjxeD_MN-A-ka6Jnk"
+OUTPUT_SHEET_KEY = 'out'
 
 
 def update_pickles():
@@ -57,21 +59,21 @@ def get_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
     Updates rides data on call. Use get_cached_data() to get prefetched data.
     """
     update_pickles()
-    return get_cached_data()
+    return get_cached_input()
 
 
-def get_cached_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
+def get_cached_input() -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Return a tuple of pandas DataFrames, ordered as (drivers, riders)
     
     If the rides data has not been read previously, the results may be outdated or an error might occur.
     """
-    with open(os.path.join(DATA_PATH, 'permanent'), 'rb') as pickle_file:
+    with open(os.path.join(DATA_PATH, PERMANENT_SHEET_KEY), 'rb') as pickle_file:
         permanent_riders = pd.DataFrame(pickle.load(pickle_file))
     
-    with open(os.path.join(DATA_PATH, 'weekly'), 'rb') as pickle_file:
+    with open(os.path.join(DATA_PATH, WEEKLY_SHEET_KEY), 'rb') as pickle_file:
         weekly_riders = pd.DataFrame(pickle.load(pickle_file))
     
-    with open(os.path.join(DATA_PATH, 'drivers'), 'rb') as pickle_file:
+    with open(os.path.join(DATA_PATH, DRIVER_SHEET_KEY), 'rb') as pickle_file:
         drivers = pd.DataFrame(pickle.load(pickle_file))
     
     prep.standardize_permanent_responses(permanent_riders)
@@ -87,42 +89,31 @@ def get_cached_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
     return (drivers, riders)
 
 
-def write_assignments(assignments: pd.DataFrame):
-    """Write the given dataframe to the final Google Sheet.
+def write_assignments(assignments: pd.DataFrame, update: bool):
+    """Write the given dataframe to the output file. If update is True, write to final Google Sheet.
     """
     print('Writing assignments')
-    # connect Google Sheets
-    gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
-    ws = gc.open_by_key(FINAL_SHEET_ID).get_worksheet(0)
+    # write to pickle
+    assignments.to_pickle(os.path.join(DATA_PATH, OUTPUT_SHEET_KEY))
 
-    #TODO: use batch updates to use only one API call
-    ws.clear()
-    set_with_dataframe(worksheet=ws, dataframe=assignments)
+    if update:
+        with open(SHEET_ID_FILE) as gid_json:
+            gid_data = json.load(gid_json)
+
+        # connect Google Sheets
+        gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
+        ws = gc.open_by_key(gid_data[OUTPUT_SHEET_KEY]).get_worksheet(0)
+
+        #TODO: use batch updates to use only one API call
+        ws.clear()
+        set_with_dataframe(worksheet=ws, dataframe=assignments)
 
 
-def get_prev_assignments() -> pd.DataFrame:
+def get_cached_output() -> pd.DataFrame:
     """Get the assignments that were calculated from the last grouping.
     """
-    print('Fetching previous output')
-    gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
-    ws = gc.open_by_key(FINAL_SHEET_ID).get_worksheet(0)
-    records = ws.get_all_records()
-    return pd.DataFrame(records)
-
-
-def update_drivers(drivers_df: pd.DataFrame):
-    """Write the given dataframe to the driver sheet.
-    """
-    with open(SHEET_ID_FILE) as gid_json:
-        gid_data = json.load(gid_json)
-
-    # connect Google Sheets
-    gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
-    ws = gc.open_by_key(gid_data[DRIVER_SHEET_KEY]).get_worksheet(0)
-
-    #TODO: use batch updates to use only one API call
-    ws.clear()
-    set_with_dataframe(worksheet=ws, dataframe=drivers_df)
+    with open(os.path.join(DATA_PATH, OUTPUT_SHEET_KEY), 'rb') as out:
+        return pd.DataFrame(pickle.load(out))
 
 
 def update_drivers_locally(drivers_df: pd.DataFrame):

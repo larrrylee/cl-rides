@@ -21,8 +21,8 @@ def run_sunday_local():
 
 def test_sync():
     prep.load_map()
-    (drivers, riders) = data.get_cached_data()
-    prev_out = data.get_prev_assignments()
+    (drivers, riders) = data.get_cached_input()
+    prev_out = data.get_cached_output()
     prep.clean_data(drivers, riders)
 
     print('Drivers ------------------------------------')

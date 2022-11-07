@@ -43,12 +43,12 @@ def main(fetch: bool, update: bool, rotate: bool, edit: bool, friday: bool, debu
     if debug:
         data.print_pickles()
     
-    (drivers, riders) = data.get_cached_data()
+    (drivers, riders) = data.get_cached_input()
     prep.clean_data(drivers, riders)
 
     # Do requested preprocessing
     if rotate or edit:
-        prev_out = data.get_prev_assignments()
+        prev_out = data.get_cached_output()
         if rotate:
             # Rotate drivers by last date driven
             prep.rotate_drivers(drivers, prep.get_prev_driver_phones(prev_out))
@@ -68,8 +68,7 @@ def main(fetch: bool, update: bool, rotate: bool, edit: bool, friday: bool, debu
         print('Assignments output')
         print(out)
 
-    if update:
-        data.write_assignments(out)
+    data.write_assignments(out, update)
 
 
 if __name__ == '__main__':
