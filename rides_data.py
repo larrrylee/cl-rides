@@ -3,7 +3,6 @@
 
 from config import *
 import gspread
-from gspread_dataframe import set_with_dataframe
 import json
 import os
 import pandas as pd
@@ -104,9 +103,8 @@ def write_assignments(assignments: pd.DataFrame, update: bool):
         gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
         ws = gc.open_by_key(gid_data[OUTPUT_SHEET_KEY]).get_worksheet(0)
 
-        #TODO: use batch updates to use only one API call
-        ws.clear()
-        set_with_dataframe(worksheet=ws, dataframe=assignments)
+        ws.resize(rows=len(assignments))
+        ws.update([assignments.columns.values.tolist()] + assignments.values.tolist())
 
 
 def get_cached_output() -> pd.DataFrame:
