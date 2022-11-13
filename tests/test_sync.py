@@ -1,6 +1,11 @@
 """Test script for synchonizing previous output to current output.
 """
 
+import os
+import sys
+curr = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.dirname(curr))
+
 import lib.preprocessing as prep
 import lib.rides_data as data
 
