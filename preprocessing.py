@@ -11,7 +11,7 @@ def load_map():
     """
     with open("map.txt", "r") as map:
         loc = 0b1
-        for line in map.readlines():
+        for line in map:
             if (line.startswith('#')):
                 continue
             places = line.split(',')
@@ -139,12 +139,18 @@ def _filter_data(drivers_df: pd.DataFrame, riders_df: pd.DataFrame):
 
 
 def _filter_drivers(drivers_df: pd.DataFrame):
-    # Currently nothing to filter :)
-    pass
+    with open('ignore_drivers.txt', 'r') as nums:
+        phone_nums = [num.strip() for num in nums]
+        remove = drivers_df[drivers_df[DRIVER_PHONE_KEY].isin(phone_nums)]
+        drivers_df.drop(remove.index, inplace=True)
 
 
 def _filter_riders(riders_df: pd.DataFrame):
     riders_df.drop(columns=[RIDER_TIMESTAMP_KEY], inplace=True)
+    with open('ignore_riders.txt', 'r') as nums:
+        phone_nums = [num.strip() for num in nums]
+        remove = riders_df[riders_df[RIDER_PHONE_KEY].isin(phone_nums)]
+        riders_df.drop(remove.index, inplace=True)
 
 
 def _validate_data(drivers_df: pd.DataFrame, riders_df: pd.DataFrame):
@@ -163,6 +169,7 @@ def _validate_drivers(drivers_df: pd.DataFrame):
     drivers_df.drop_duplicates(subset=DRIVER_PHONE_KEY, inplace=True, keep='last')
     drivers_df[DRIVER_TIMESTAMP_KEY] = pd.to_datetime(drivers_df[DRIVER_TIMESTAMP_KEY])
     drivers_df[DRIVER_CAPACITY_KEY] = drivers_df[DRIVER_CAPACITY_KEY].astype(int)
+    drivers_df[DRIVER_PHONE_KEY] = drivers_df[DRIVER_PHONE_KEY].astype(str)
 
 
 def _validate_riders(riders_df: pd.DataFrame):
