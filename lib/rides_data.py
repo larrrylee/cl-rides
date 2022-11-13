@@ -1,18 +1,18 @@
 """Implements usage of the Google Sheets API, including reading driver/rider data and writing to the output sheet.
 """
 
-from config import *
+from cfg.config import *
 import gspread
 import json
+import lib.preprocessing as prep
 import os
 import pandas as pd
 import pickle
-import preprocessing as prep
 from typing import Tuple
 
 
 DATA_PATH = 'pickle'
-SHEET_ID_FILE = 'sheet_ids.json'
+SHEET_ID_FILE = 'cfg/sheet_ids.json'
 PERMANENT_SHEET_KEY = 'permanent'
 WEEKLY_SHEET_KEY = 'weekly'
 DRIVER_SHEET_KEY = 'drivers'

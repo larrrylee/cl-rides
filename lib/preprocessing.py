@@ -1,25 +1,9 @@
 """Implements all the preprocessing functionality for the data.
 """
 
-from config import *
+from cfg.config import *
 import pandas as pd
 from sqlite3 import Timestamp
-
-
-def load_map():
-    """Loads map.txt into a dictionary of bitmaps for the hardcoded locations.
-    """
-    with open("map.txt", "r") as map:
-        loc = 0b1
-        for line in map:
-            if (line.startswith('#')):
-                continue
-            places = line.split(',')
-            places = [place.strip() for place in places]
-            for key in loc_map:
-                if key in places:
-                    loc_map[key] |= loc
-            loc <<= 1
 
 
 def sync_to_last_assignments(drivers_df: pd.DataFrame, riders_df: pd.DataFrame, out: pd.DataFrame) -> pd.DataFrame:
@@ -139,18 +123,14 @@ def _filter_data(drivers_df: pd.DataFrame, riders_df: pd.DataFrame):
 
 
 def _filter_drivers(drivers_df: pd.DataFrame):
-    with open('ignore_drivers.txt', 'r') as nums:
-        phone_nums = [num.strip() for num in nums]
-        remove = drivers_df[drivers_df[DRIVER_PHONE_KEY].isin(phone_nums)]
-        drivers_df.drop(remove.index, inplace=True)
+    remove = drivers_df[drivers_df[DRIVER_PHONE_KEY].isin(ignored_drivers)]
+    drivers_df.drop(remove.index, inplace=True)
 
 
 def _filter_riders(riders_df: pd.DataFrame):
     riders_df.drop(columns=[RIDER_TIMESTAMP_KEY], inplace=True)
-    with open('ignore_riders.txt', 'r') as nums:
-        phone_nums = [num.strip() for num in nums]
-        remove = riders_df[riders_df[RIDER_PHONE_KEY].isin(phone_nums)]
-        riders_df.drop(remove.index, inplace=True)
+    remove = riders_df[riders_df[RIDER_PHONE_KEY].isin(ignored_riders)]
+    riders_df.drop(remove.index, inplace=True)
 
 
 def _validate_data(drivers_df: pd.DataFrame, riders_df: pd.DataFrame):

@@ -1,7 +1,7 @@
 """Implements all the postprocessing functionality for the results.
 """
 
-from config import *
+from cfg.config import *
 import numpy as np
 import pandas as pd
 
@@ -9,10 +9,10 @@ import pandas as pd
 def clean_output(out: pd.DataFrame):
     """Filters out the unneeded columns and and validates the data before writing.
     """
-    format_output(out)
+    _format_output(out)
 
 
-def format_output(out: pd.DataFrame):
+def _format_output(out: pd.DataFrame):
     """Organizes the output to order by driver then driver. Removes redundant driver details.
     """
     out.sort_values(by=[OUTPUT_DRIVER_NAME_KEY, RIDER_LOCATION_KEY], inplace=True)

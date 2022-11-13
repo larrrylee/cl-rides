@@ -4,10 +4,8 @@ Usage:
     python rides.py
 """
 
-import assignments as group
-from config import GLOBALS, GROUPING_THRESHOLD
-import preprocessing as prep
-import rides_data as data
+from cfg.config import GLOBALS, GROUPING_THRESHOLD
+import lib
 import sys
 
 
@@ -33,42 +31,40 @@ def show_usage() -> None:
 def main(fetch: bool, update: bool, rotate: bool, edit: bool, friday: bool, debug: bool) -> None:
     """ Assign riders to drivers, updating the sheet if specified
     """
-    prep.load_map()
-
     # Fetch data from sheets
     if fetch:
-        data.update_pickles()
+        lib.update_pickles()
 
     # Print input
     if debug:
-        data.print_pickles()
+        lib.print_pickles()
     
-    (drivers, riders) = data.get_cached_input()
-    prep.clean_data(drivers, riders)
+    (drivers, riders) = lib.get_cached_input()
+    lib.clean_data(drivers, riders)
 
     # Do requested preprocessing
     if rotate or edit:
-        prev_out = data.get_cached_output()
+        prev_out = lib.get_cached_output()
         if rotate:
             # Rotate drivers by last date driven
-            prep.rotate_drivers(drivers, prep.get_prev_driver_phones(prev_out))
-            data.update_drivers_locally(drivers)
+            lib.rotate_drivers(drivers, lib.get_prev_driver_phones(prev_out))
+            lib.update_drivers_locally(drivers)
         elif edit:
             #TODO: Load previous output into assignments
             pass
 
     # Execute the assignment algorithm
     if friday:
-        out = group.assign_friday(drivers, riders, debug)
+        out = lib.assign_friday(drivers, riders, debug)
     else:
-        out = group.assign_sunday(drivers, riders, debug)
+        out = lib.assign_sunday(drivers, riders, debug)
     
     # Print output
     if debug:
         print('Assignments output')
         print(out)
 
-    data.write_assignments(out, update)
+    lib.write_assignments(out, update)
 
 
 if __name__ == '__main__':

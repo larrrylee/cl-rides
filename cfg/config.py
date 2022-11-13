@@ -65,6 +65,7 @@ GLOBALS = {
 
 # Route codes
 DEFAULT_LOCS_CODE = 0b0
+MAP_FILE = 'cfg/map.txt'
 loc_map = {
     REVELLE:       0b0,
     MUIR:          0b0,
@@ -79,3 +80,8 @@ loc_map = {
     COSTA_VERDE:   0b0,
     ELSEWHERE:     0b0,
 }
+
+IGNORE_DRIVERS_FILE = 'cfg/ignore_drivers.txt'
+ignored_drivers = []
+IGNORE_RIDERS_FILE = 'cfg/ignore_riders.txt'
+ignored_riders = []

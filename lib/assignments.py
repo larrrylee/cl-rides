@@ -2,11 +2,11 @@
 Includes group optimization for common pickup locations.
 """
 
-from config import *
+from cfg.config import *
+import lib.postprocessing as post
+import lib.preprocessing as prep
+from lib.rides_data import *
 import pandas as pd
-import postprocessing as post
-import preprocessing as prep
-from rides_data import *
 
 
 def assign(drivers_df: pd.DataFrame, riders_df: pd.DataFrame, debug: bool = False) -> pd.DataFrame:
