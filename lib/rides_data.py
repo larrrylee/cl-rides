@@ -11,21 +11,13 @@ import pickle
 from typing import Tuple
 
 
-DATA_PATH = 'pickle'
-SHEET_ID_FILE = 'cfg/sheet_ids.json'
-PERMANENT_SHEET_KEY = 'permanent'
-WEEKLY_SHEET_KEY = 'weekly'
-DRIVER_SHEET_KEY = 'drivers'
-OUTPUT_SHEET_KEY = 'out'
-
-
 def update_pickles():
     """Pull riders and drivers from the Google Sheets and write to the pickle files.
     """
     # connect Google Sheets
-    gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
+    gc = gspread.service_account(filename=SERVICE_ACCT_FILE)
 
-    with open(SHEET_ID_FILE) as gid_json:
+    with open(os.path.join(CFG_PATH, SHEET_ID_FILE)) as gid_json:
         gid_data = json.load(gid_json)
 
     for key in gid_data:
@@ -41,7 +33,7 @@ def print_pickles():
 
     There is no call to the Google Sheets API, so the printed data is from the last call to update_pickles.
     """
-    with open(SHEET_ID_FILE) as gid_json:
+    with open(os.path.join(CFG_PATH, SHEET_ID_FILE)) as gid_json:
         keys = json.load(gid_json).keys()
 
     for key in keys:
@@ -100,7 +92,7 @@ def write_assignments(assignments: pd.DataFrame, update: bool):
             gid_data = json.load(gid_json)
 
         # connect Google Sheets
-        gc = gspread.service_account(filename=os.path.join(os.path.dirname(os.path.realpath(__file__)), "service_account.json"))
+        gc = gspread.service_account(filename=SERVICE_ACCT_FILE)
         ws = gc.open_by_key(gid_data[OUTPUT_SHEET_KEY]).get_worksheet(0)
 
         ws.resize(rows=len(assignments))

@@ -4,8 +4,9 @@ Usage:
     python rides.py
 """
 
-from cfg.config import GLOBALS, GROUPING_THRESHOLD
+from cfg.config import GLOBALS, GROUPING_THRESHOLD, SERVICE_ACCT_FILE
 import lib
+import os
 import sys
 
 
@@ -102,9 +103,14 @@ if __name__ == '__main__':
     
     valid_day = friday != sunday
     valid_clear_opt = not (rotate and edit)
-    execute = execute and valid_day and valid_clear_opt
+    api_reqs_fulfilled = os.path.exists(SERVICE_ACCT_FILE) or not (update or fetch) 
+    execute = execute and valid_day and valid_clear_opt and api_reqs_fulfilled
 
     if execute:
         main(fetch, update, rotate, edit, friday, debug)
+    elif not api_reqs_fulfilled:
+        print(f'${SERVICE_ACCT_FILE} not found.')
+        print('Make sure service_account.json is in the cfg directory.')
+        print("Contact Eric Pham if you don't have it.")
     else:
         show_usage()

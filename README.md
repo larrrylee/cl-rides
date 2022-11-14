@@ -16,9 +16,14 @@ FLAG
     --threshold=<num>     Sets how many open spots a driver must have to spontaneously pick up at a neighboring location. The default is 2.
 ```
 
-To run the file, you need the API key. Contact me directly for it.
-
 [Specification Document](https://docs.google.com/document/d/1Ube_m7H2BMxwY900dqZHqWQX3rRoPFq41DLoNI-5r6w/edit?usp=sharing)
+
+## Setup
+To install the required dependencies, run
+```bash
+pip install -r requirements.txt
+```
+To run the file, you need the API key. Contact me (Eric Pham) directly for it.
 
 ## Configurations
 In the `cfg` directory, you will find the file `map.txt`.

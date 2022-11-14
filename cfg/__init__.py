@@ -15,7 +15,7 @@ try:
                     loc_map[key] |= loc
             loc <<= 1
 except:
-    print(f'Unable to load ${MAP_FILE}. Location optimizations are ignored.')
+    print(f'${MAP_FILE} not loaded. Location optimizations are ignored.')
 
 """Loads ignore_drivers.txt into a list.
 """
@@ -24,7 +24,7 @@ try:
         for num in nums:
             ignored_drivers.append(num.strip())
 except:
-    print(f'Unable to load ${IGNORE_DRIVERS_FILE}. No drivers ignored.')
+    print(f'${IGNORE_DRIVERS_FILE} not loaded. No drivers ignored.')
 
 """Loads ignore_riders.txt into a list.
 """
@@ -33,4 +33,18 @@ try:
         for num in nums:
             ignored_riders.append(num.strip())
 except:
-    print(f'Unable to load ${IGNORE_RIDERS_FILE}. No riders ignored.')
+    print(f'${IGNORE_RIDERS_FILE} not loaded. No riders ignored.')
+
+"""Create cache files.
+"""
+if (not os.path.isdir(DATA_PATH)):
+    os.makedirs(DATA_PATH)
+import pandas as pd
+if (not os.path.exists(os.path.join(DATA_PATH, PERMANENT_SHEET_KEY))):
+    pd.DataFrame().to_pickle(os.path.join(DATA_PATH, PERMANENT_SHEET_KEY))
+if (not os.path.exists(os.path.join(DATA_PATH, WEEKLY_SHEET_KEY))):
+    pd.DataFrame().to_pickle(os.path.join(DATA_PATH, WEEKLY_SHEET_KEY))
+if (not os.path.exists(os.path.join(DATA_PATH, DRIVER_SHEET_KEY))):
+    pd.DataFrame().to_pickle(os.path.join(DATA_PATH, DRIVER_SHEET_KEY))
+if (not os.path.exists(os.path.join(DATA_PATH, OUTPUT_SHEET_KEY))):
+    pd.DataFrame().to_pickle(os.path.join(DATA_PATH, OUTPUT_SHEET_KEY))

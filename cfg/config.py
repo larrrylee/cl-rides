@@ -59,13 +59,12 @@ DRIVER_ROUTE_KEY = 'Locations'
 
 # The number of openings required for a car to freely pick up from a neighboring location
 GROUPING_THRESHOLD = 'threshold'
-GLOBALS = {
+GLOBALS = {                     # Use a dict in order to modify the global var later
     GROUPING_THRESHOLD: 2
 }
 
 # Route codes
 DEFAULT_LOCS_CODE = 0b0
-MAP_FILE = 'cfg/map.txt'
 loc_map = {
     REVELLE:       0b0,
     MUIR:          0b0,
@@ -81,7 +80,22 @@ loc_map = {
     ELSEWHERE:     0b0,
 }
 
-IGNORE_DRIVERS_FILE = 'cfg/ignore_drivers.txt'
+# File paths
+import os
+DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pickle')
+CFG_PATH = os.path.dirname(os.path.realpath(__file__))
+MAP_FILE = os.path.join(CFG_PATH, 'map.txt')
+IGNORE_DRIVERS_FILE = os.path.join(CFG_PATH, 'ignore_drivers.txt')
+IGNORE_RIDERS_FILE = os.path.join(CFG_PATH, 'ignore_riders.txt')
+SERVICE_ACCT_FILE = os.path.join(CFG_PATH, 'service_account.json')
+SHEET_ID_FILE = os.path.join(CFG_PATH, 'sheet_ids.json')
+
+# Sheet ID keys
+PERMANENT_SHEET_KEY = 'permanent'
+WEEKLY_SHEET_KEY = 'weekly'
+DRIVER_SHEET_KEY = 'drivers'
+OUTPUT_SHEET_KEY = 'out'
+
+# Lists to be filled later
 ignored_drivers = []
-IGNORE_RIDERS_FILE = 'cfg/ignore_riders.txt'
 ignored_riders = []
