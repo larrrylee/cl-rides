@@ -23,10 +23,12 @@ def _format_output(out: pd.DataFrame):
             # Denote unassigned riders.
             out.at[idx, OUTPUT_DRIVER_NAME_KEY] = '?'
             out.at[idx, OUTPUT_DRIVER_PHONE_KEY] = '?'
+            out.at[idx, OUTPUT_DRIVER_CAPACITY_KEY] = ''
         elif out.at[idx, OUTPUT_DRIVER_NAME_KEY] == out.at[idx - 1, OUTPUT_DRIVER_NAME_KEY]:
             # Remove redundant driver details.
             out.at[idx, OUTPUT_DRIVER_NAME_KEY] = ''
             out.at[idx, OUTPUT_DRIVER_PHONE_KEY] = ''
+            out.at[idx, OUTPUT_DRIVER_CAPACITY_KEY] = ''
 
 
 def alert_skipped_riders(out: pd.DataFrame, debug: bool):

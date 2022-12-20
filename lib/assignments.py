@@ -15,7 +15,7 @@ def assign(drivers_df: pd.DataFrame, riders_df: pd.DataFrame, debug: bool = Fals
     PRECONDITION: add_temporaries must have been called on drivers_df.
     """
     riders_df.sort_values(by=RIDER_LOCATION_KEY, inplace=True, key=lambda col: col.apply(lambda loc: loc_map.get(loc, loc_map[ELSEWHERE])))
-    out = pd.concat([pd.DataFrame(columns=[OUTPUT_DRIVER_NAME_KEY, OUTPUT_DRIVER_PHONE_KEY]), riders_df[[RIDER_NAME_KEY, RIDER_PHONE_KEY, RIDER_LOCATION_KEY, RIDER_NOTES_KEY]]], axis='columns')
+    out = pd.concat([pd.DataFrame(columns=[OUTPUT_DRIVER_NAME_KEY, OUTPUT_DRIVER_PHONE_KEY, OUTPUT_DRIVER_CAPACITY_KEY]), riders_df[[RIDER_NAME_KEY, RIDER_PHONE_KEY, RIDER_LOCATION_KEY, RIDER_NOTES_KEY]]], axis='columns')
 
     if debug:
         print('Drivers')
@@ -110,6 +110,7 @@ def _add_rider(out: pd.DataFrame, r_idx: int, drivers_df: pd.DataFrame, d_idx: i
     """
     out.at[r_idx, OUTPUT_DRIVER_NAME_KEY] = drivers_df.at[d_idx, DRIVER_NAME_KEY]
     out.at[r_idx, OUTPUT_DRIVER_PHONE_KEY] = drivers_df.at[d_idx, DRIVER_PHONE_KEY]
+    out.at[r_idx, OUTPUT_DRIVER_CAPACITY_KEY] = '' #int(drivers_df.at[d_idx, DRIVER_CAPACITY_KEY])  #Chose not to include total seats
     rider_loc = loc_map.get(out.at[r_idx, RIDER_LOCATION_KEY], loc_map[ELSEWHERE])
     drivers_df.at[d_idx, DRIVER_OPENINGS_KEY] -= 1
     drivers_df.at[d_idx, DRIVER_ROUTE_KEY] |= rider_loc

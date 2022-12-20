@@ -4,6 +4,7 @@
 ### Column headers for the dataframes
 OUTPUT_DRIVER_NAME_KEY = 'Driver'
 OUTPUT_DRIVER_PHONE_KEY = 'Driver Phone #'
+OUTPUT_DRIVER_CAPACITY_KEY = 'Seats'
 
 DRIVER_TIMESTAMP_KEY = 'Timestamp'
 DRIVER_NAME_KEY = 'Name'
