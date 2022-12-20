@@ -2,18 +2,18 @@
 
 ```
 USAGE:
-python rides.py <--friday | --sunday> <--clear | --no-clear> [[FLAG] ...]
+python rides.py <--friday | --sunday> [[FLAG] ...]
 
 FLAG
-    --help                Shows usage
-    --debug               Prints out debug statements while running
-    --no-fetch            Prevents new sheet data from being fetched
-    --no-update           Prevents the output sheet from being updated
-    --rotate              Previous assignments are cleared and drivers are rotated based on date last driven
-    --edit                Previous assignments are retained and new assignments are appended
     --friday              Assigns rides for Friday College Life
     --sunday              Assigns rides for Sunday service
+    --rotate              Previous assignments are cleared and drivers are rotated based on date last driven
+    --edit                Previous assignments are retained and new assignments are appended
+    --no-fetch            Prevents new sheet data from being fetched
+    --no-update           Prevents the output sheet from being updated
     --threshold=<num>     Sets how many open spots a driver must have to spontaneously pick up at a neighboring location. The default is 2.
+    --help                Shows usage
+    --debug               Prints out debug statements while running
 ```
 
 [Specification Document](https://docs.google.com/document/d/1Ube_m7H2BMxwY900dqZHqWQX3rRoPFq41DLoNI-5r6w/edit?usp=sharing)
@@ -23,7 +23,8 @@ To install the required dependencies, run
 ```bash
 pip install -r requirements.txt
 ```
-To run the file, you need the API key. Contact me (Eric Pham) directly for it.
+To run the file, you need the API key in the form of a `service_account.json` file. Contact me (Eric Pham) directly for it.
+You will need to place the `service_account.json` file in the `cfg` directory.
 
 ## Configurations
 In the `cfg` directory, you will find the file `map.txt`.
