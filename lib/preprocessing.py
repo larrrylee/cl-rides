@@ -82,18 +82,18 @@ def standardize_weekly_responses(riders_df: pd.DataFrame):
 def filter_friday(riders_df: pd.DataFrame) -> pd.DataFrame:
     """Filters riders that will attend Friday College Life.
     """
-    return riders_df[riders_df[RIDER_FRIDAY_KEY] == RIDE_THERE_KEYWORD]
+    return riders_df.copy()[riders_df[RIDER_FRIDAY_KEY] == RIDE_THERE_KEYWORD]
 
 
 def filter_sunday(riders_df: pd.DataFrame) -> pd.DataFrame:
     """Filters riders that will attend Sunday service.
     """
-    return riders_df[riders_df[RIDER_SUNDAY_KEY] == RIDE_THERE_KEYWORD]
+    return riders_df.copy()[riders_df[RIDER_SUNDAY_KEY] == RIDE_THERE_KEYWORD]
 
 
 def prep_necessary_drivers(drivers_df: pd.DataFrame, cnt_riders: int) -> pd.DataFrame:
     driver_cnt = _find_driver_cnt(drivers_df, cnt_riders)
-    drivers = drivers_df[:driver_cnt]
+    drivers = drivers_df.copy()[:driver_cnt]
     drivers.sort_values(by=DRIVER_CAPACITY_KEY, ascending=False, inplace=True)
     _add_temporaries(drivers)
     return drivers
