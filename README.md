@@ -1,5 +1,16 @@
 # Rides App
 
+## Background
+Previously, the Rides Coordinator would manually parse through these spreadsheets to organize riders into cars.
+This is a very time-consuming process that takes about 30-40 minutes every time rides needed to be coordinated.
+The completion of this script will save over an hour each week for the Rides Coordinator.
+
+## Objective
+Develop a Python script that turns Permanent and Weekly Rides Form outputs into a formatted Google Sheets spreadsheet for drivers.
+It will automatically assign riders to drivers every single week with the execution of a Python file.
+
+[Specification Document](https://docs.google.com/document/d/1Ube_m7H2BMxwY900dqZHqWQX3rRoPFq41DLoNI-5r6w/edit?usp=sharing)
+
 ```
 USAGE:
 python rides.py <--friday | --sunday> [[FLAG] ...]
@@ -16,14 +27,12 @@ FLAG
     --debug               Prints out debug statements while running
 ```
 
-[Specification Document](https://docs.google.com/document/d/1Ube_m7H2BMxwY900dqZHqWQX3rRoPFq41DLoNI-5r6w/edit?usp=sharing)
-
 ## Setup
 To install the required dependencies, run
 ```bash
 pip install -r requirements.txt
 ```
-To run the file, you need the API key in the form of a `service_account.json` file. Contact me (Eric Pham) directly for it.
+To run the file, you need the API key in the form of a `service_account.json` file. Contact Eric Pham directly for it.
 You will need to place the `service_account.json` file in the `cfg` directory.
 
 ## Configurations
