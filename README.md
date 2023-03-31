@@ -47,8 +47,8 @@ This file tells the program how different pickup locations are situated around e
 The following is an example file for the UCSD campus.
 It simulates a path that goes from the southwest side of campus to the east.
 ```
-# West campus
 ELSEWHERE
+# West campus
 Revelle
 Muir
 Sixth
