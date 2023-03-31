@@ -43,7 +43,21 @@ Additionally, you can add `ignore_drivers.txt` and/or `ignore_riders.txt` to the
 Add the phone numbers of the people you want to exclude in the next run of the program, separated by `\n`, or **ENTER**.
 
 ### map.txt
-This tells the program how different pickup locations are situated around each other.
+This file tells the program how different pickup locations are situated around each other.
+The following is an example file for the UCSD campus.
+It simulates a path that goes from the southwest side of campus to the east.
+```
+# West campus
+Revelle
+Muir
+Sixth
+Marshall
+ERC
+Seventh
+# East campus
+Warren, Pepper Canyon Apts
+Rita Atkinson
+```
 The syntax is as follows.
 - `<loc>` : Every location must match how it is used in the Google Forms
   - `Revelle` is accepted, `revelle` is not.
