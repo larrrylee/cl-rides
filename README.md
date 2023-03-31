@@ -48,6 +48,7 @@ The following is an example file for the UCSD campus.
 It simulates a path that goes from the southwest side of campus to the east.
 ```
 # West campus
+ELSEWHERE
 Revelle
 Muir
 Sixth
@@ -57,6 +58,7 @@ Seventh
 # East campus
 Warren, Pepper Canyon Apts
 Rita Atkinson
+ELSEWHERE
 ```
 The syntax is as follows.
 - `<loc>` : Every location must match how it is used in the Google Forms
