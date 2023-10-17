@@ -1,5 +1,13 @@
+# Authentication details
 service_account.json
+
+# Data files
+sheet_ids.json
 pickle
-__pycache__
+
+# Exception files
 ignore_drivers.txt
 ignore_riders.txt
+
+# Auto-generated
+__pycache__
