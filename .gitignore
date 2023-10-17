@@ -5,9 +5,10 @@ service_account.json
 sheet_ids.json
 pickle
 
-# Exception files
+# User config files
 ignore_drivers.txt
 ignore_riders.txt
+map.txt
 
 # Auto-generated
 __pycache__
