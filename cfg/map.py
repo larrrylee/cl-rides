@@ -3,6 +3,7 @@ Distance values acquired from Google Maps Matrix API.
 """
 
 import requests, json
+import os
 import googlemaps
 import pandas as pd
 import lib.postprocessing as post
@@ -12,7 +13,8 @@ from dotenv import load_dotenv
 
 # TODO: protect api_key, env?
 
-gmaps = googlemaps.Client(key=env.API_KEY)
+load_dotenv()
+gmaps = googlemaps.Client(key=os.getenv('API_KEY'))
 
 # This (county) specifier works well for all locations extant in our specific Google Sheets so far
 LOCATION_SPECIFIER = ", San Diego" 
@@ -150,7 +152,7 @@ def _encode_map():
     url += url_origins
 
     url += "&units=imperial"
-    url = url + "&key=" + api_key
+    url = url + "&key=" + os.getenv('API_KEY')
 
     print("url")
     print(url)
