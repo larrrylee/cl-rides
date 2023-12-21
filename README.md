@@ -10,6 +10,7 @@ Develop a Python script that turns Permanent and Weekly Rides Form outputs into 
 It will automatically assign riders to drivers every single week with the execution of a Python file.
 
 [Specification Document](https://docs.google.com/document/d/1Ube_m7H2BMxwY900dqZHqWQX3rRoPFq41DLoNI-5r6w/edit?usp=sharing)
+[Service Account Setup Tutorial](https://denisluiz.medium.com/python-with-google-sheets-service-account-step-by-step-8f74c26ed28e)
 
 ```
 USAGE:
@@ -43,7 +44,23 @@ Additionally, you can add `ignore_drivers.txt` and/or `ignore_riders.txt` to the
 Add the phone numbers of the people you want to exclude in the next run of the program, separated by `\n`, or **ENTER**.
 
 ### map.txt
-This tells the program how different pickup locations are situated around each other.
+This file tells the program how different pickup locations are situated around each other.
+The following is an example file for the UCSD campus.
+It simulates a path that goes from the southwest side of campus to the east.
+```
+ELSEWHERE
+# West campus
+Revelle
+Muir
+Sixth
+Marshall
+ERC
+Seventh
+# East campus
+Warren, Pepper Canyon Apts
+Rita Atkinson
+ELSEWHERE
+```
 The syntax is as follows.
 - `<loc>` : Every location must match how it is used in the Google Forms
   - `Revelle` is accepted, `revelle` is not.
